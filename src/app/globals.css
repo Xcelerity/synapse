@@ -497,52 +497,34 @@ body {
     }
 }
 
-/* ============================================
-   RESPONSIVE: TABLET (768px – 1024px)
-   ============================================ */
 @media (max-width: 1024px) {
-
-    /* Sidebar auto-collapses to icon mode */
     .sidebar-full-width {
         width: 72px !important;
     }
 }
 
-/* ============================================
-   RESPONSIVE: MOBILE (< 768px)
-   ============================================ */
 @media (max-width: 768px) {
-
-    /* Give pages padding at bottom for the bottom nav bar */
     .dashboard-main {
         padding-bottom: 72px !important;
     }
 
-    /* Pages that use a 2-panel flex layout (notes, ai-tutor, etc.) */
     .page-split {
         flex-direction: column !important;
-        height: auto !important;
     }
 
     .page-split-sidebar {
+        max-height: 1000px !important;
         width: 100% !important;
-        max-height: 280px !important;
         border-right: none !important;
         border-bottom: 1px solid var(--border-subtle) !important;
         flex-shrink: 0;
     }
 
-    .page-split-main {
-        height: calc(100vh - 280px - 72px) !important;
-    }
-
-    /* Chat-style pages */
     .chat-bubble-user,
     .chat-bubble-ai {
         max-width: 90%;
     }
 
-    /* Dashboard page */
     .dashboard-header {
         flex-direction: column !important;
         gap: 12px !important;
@@ -568,12 +550,10 @@ body {
         text-align: center !important;
     }
 
-    /* Generic page padding */
     .page-container {
         padding: 16px !important;
     }
 
-    /* Login page */
     .login-split {
         flex-direction: column !important;
         height: auto !important;
@@ -591,5 +571,11 @@ body {
         border-top: none !important;
         padding: 32px 20px !important;
         min-height: 100vh !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .header-signout-btn {
+        display: none !important;
     }
 }

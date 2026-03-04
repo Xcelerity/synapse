@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/store/authStore";
@@ -20,6 +20,14 @@ export default function CheatsheetsPage() {
     null,
   );
   const cheatsheetRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   async function handleGenerate() {
     if (!topic.trim() && !content.trim()) {
       return toast.error("Please provide a topic or source content.");
@@ -109,7 +117,7 @@ Return ONLY valid JSON with this exact schema:
     }
   }
   return (
-    <div className="page-container" style={{ padding: "32px 40px", maxWidth: 1200, margin: "0 auto" }}>
+    <div className="page-container" style={{ padding: isMobile ? "16px 20px" : "32px 40px", maxWidth: 1200, margin: "0 auto" }}>
       {phase === "setup" ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -117,7 +125,7 @@ Return ONLY valid JSON with this exact schema:
         >
           <div className="page-container" style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8, color: "var(--text-primary)" }}>
-              ðŸŽ¨ Cheatsheets
+              🎨 Cheatsheets
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: 16 }}>
               Turn any topic, text, or file into a beautiful, multi-page vector cheatsheet.
@@ -180,10 +188,10 @@ Return ONLY valid JSON with this exact schema:
                       color: inputTab === tab ? "white" : "var(--text-muted)",
                     }}
                   >
-                    {tab === "text" && "ðŸ“ Type / Paste"}
-                    {tab === "image" && "ðŸ–¼ï¸ Image"}
-                    {tab === "pdf" && "ðŸ“„ PDF"}
-                    {tab === "youtube" && "ðŸŽ¥ YouTube"}
+                    {tab === "text" && "📝 Type / Paste"}
+                    {tab === "image" && "🖼️ Image"}
+                    {tab === "pdf" && "📄 PDF"}
+                    {tab === "youtube" && "📹 YouTube"}
                   </button>
                 ))}
               </div>
@@ -206,13 +214,13 @@ Return ONLY valid JSON with this exact schema:
               )}
               {inputTab !== "text" && (
                 <div className="page-container" style={{
-                    border: "2px dashed var(--border-subtle)",
-                    borderRadius: 12,
-                    padding: 40,
-                    textAlign: "center",
-                  }}
+                  border: "2px dashed var(--border-subtle)",
+                  borderRadius: 12,
+                  padding: 40,
+                  textAlign: "center",
+                }}
                 >
-                  <div className="page-container" style={{ fontSize: 32, marginBottom: 12 }}>ðŸ“</div>
+                  <div className="page-container" style={{ fontSize: 32, marginBottom: 12 }}>📝</div>
                   <div className="page-container" style={{ fontSize: 14, color: "var(--text-muted)" }}>
                     This tab is under construction. Please use Text input for
                     now!
@@ -221,10 +229,10 @@ Return ONLY valid JSON with this exact schema:
               )}
             </div>
             <div className="page-container" style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                marginTop: 32,
-              }}
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: 32,
+            }}
             >
               <button
                 className="btn-primary"
@@ -233,8 +241,8 @@ Return ONLY valid JSON with this exact schema:
                 style={{ padding: "14px 32px", fontSize: 16 }}
               >
                 {generating
-                  ? "âœ¨ Synthesizing Cheatsheet..."
-                  : "ðŸŽ¨ Auto-Synthesize Cheatsheet"}
+                  ? "✨ Synthesizing Cheatsheet..."
+                  : "🎨 Auto-Synthesize Cheatsheet"}
               </button>
             </div>
           </div>
@@ -242,11 +250,11 @@ Return ONLY valid JSON with this exact schema:
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="page-container" style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 24,
-            }}
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 24,
+          }}
           >
             <button onClick={() => setPhase("setup")} className="btn-ghost">
               â† Back to Editor
@@ -256,16 +264,16 @@ Return ONLY valid JSON with this exact schema:
               className="btn-primary"
               style={{ display: "flex", gap: 8, alignItems: "center" }}
             >
-              <span>ðŸ“¥</span> Download PDF
+              <span>📥</span> Download PDF
             </button>
           </div>
           { }
           <div className="page-container" style={{
-              background: "#e2e8f0",
-              padding: 40,
-              borderRadius: 16,
-              overflowX: "auto",
-            }}
+            background: "#e2e8f0",
+            padding: 40,
+            borderRadius: 16,
+            overflowX: "auto",
+          }}
           >
             <div
               ref={cheatsheetRef}

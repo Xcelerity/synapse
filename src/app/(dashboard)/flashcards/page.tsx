@@ -68,6 +68,14 @@ export default function FlashcardsPage() {
     const [sessionStats, setSessionStats] = useState({ reviewed: 0, correct: 0 });
     const [editingDeckTitle, setEditingDeckTitle] = useState(false);
     const [editTitleVal, setEditTitleVal] = useState('');
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const fetchDecks = useCallback(async () => {
         if (!user) return;
         try {
@@ -321,21 +329,21 @@ export default function FlashcardsPage() {
         }).length;
     };
     return (
-        <div className="page-container" style={{ padding: '32px 40px', maxWidth: 1200 }}>
+        <div className="page-container" style={{ padding: isMobile ? '24px 16px' : '32px 40px', maxWidth: 1200 }}>
             <AnimatePresence mode="wait">
                 { }
                 {mode === 'list' && (
                     <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: 24, gap: isMobile ? 12 : 0 }}>
                             <div>
-                                <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 4 }}>🃏 Flashcard Decks</h1>
-                                <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Master your material with smart flashcards</p>
+                                <h1 style={{ fontSize: isMobile ? 24 : 28, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 4 }}>🃏 Flashcard Decks</h1>
+                                <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Master your material with smart flashcards</p>
                             </div>
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>
                                 <input className="input-field" placeholder="New deck name..." value={newDeckName} onChange={e => setNewDeckName(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && createDeck()} style={{ width: 220, fontSize: 13 }} />
-                                <button onClick={createDeck} disabled={!newDeckName.trim()} className="btn-primary">+ Create Deck</button>
-                                <button onClick={() => { setSelectedDeck(null); setMode('ai-generate'); }} className="btn-secondary">🤖 AI Options</button>
+                                    onKeyDown={e => e.key === 'Enter' && createDeck()} style={{ width: isMobile ? '100%' : 220, fontSize: 13 }} />
+                                <button onClick={createDeck} disabled={!newDeckName.trim()} className="btn-primary" style={{ flex: isMobile ? 1 : 'none' }}>+ Create Deck</button>
+                                <button onClick={() => { setSelectedDeck(null); setMode('ai-generate'); }} className="btn-secondary" style={{ flex: isMobile ? 1 : 'none' }}>🤖 AI Options</button>
                             </div>
                         </div>
                         {loading ? (
@@ -400,11 +408,11 @@ export default function FlashcardsPage() {
                 { }
                 {mode === 'ai-generate' && (
                     <motion.div key="ai-gen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-                            <button onClick={() => setMode('list')} className="btn-ghost">← Back</button>
-                            <h1 style={{ fontSize: 24, fontWeight: 800 }} className="gradient-text">🤖 Advanced AI Flashcard Generator {selectedDeck ? `(${selectedDeck.name})` : ''}</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                            <button onClick={() => setMode('list')} className="btn-ghost" style={{ padding: '8px 12px' }}>← Back</button>
+                            <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800 }} className="gradient-text">🤖 Advanced AI Flashcard Generator {selectedDeck ? `(${selectedDeck.name})` : ''}</h1>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
                             { }
                             <div className="glass-card" style={{ padding: 18 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -453,9 +461,9 @@ export default function FlashcardsPage() {
                                 ))}
                             </div>
                             {inputTab === 'text' ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 12 }}>
-                                    <input className="input-field" placeholder="Topic (e.g. 'Cell Biology')" value={topic} onChange={e => setTopic(e.target.value)} style={{ fontSize: 14, alignSelf: 'start' }} />
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12 }}>
+                                    <input className="input-field" placeholder="Topic (e.g. 'Cell Biology')" value={topic} onChange={e => setTopic(e.target.value)} style={{ fontSize: 14, width: isMobile ? '100%' : 220, alignSelf: 'stretch' }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
                                         <textarea className="input-field" placeholder="Paste study material or dictate..." value={content} onChange={e => setContent(e.target.value)} rows={8} style={{ resize: 'vertical' }} />
                                         <VoiceDictationButton onResult={(text) => setContent(prev => prev ? prev + ' ' + text : text)} />
                                     </div>
@@ -484,9 +492,9 @@ export default function FlashcardsPage() {
                 )}
 
                 {mode === 'review' && currentCard && (
-                    <motion.div key="review" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 32 }}>
+                    <motion.div key="review" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: isMobile ? 16 : 32 }}>
                         { }
-                        <div style={{ width: '100%', maxWidth: 600, marginBottom: 24 }}>
+                        <div style={{ width: '100%', maxWidth: 600, marginBottom: isMobile ? 16 : 24 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 13, color: 'var(--text-muted)' }}>
                                 <span>{currentIndex + 1} / {reviewCards.length}</span>
                                 <span>✅ {sessionStats.correct} correct</span>
@@ -507,13 +515,13 @@ export default function FlashcardsPage() {
                                     boxSizing: 'border-box',
                                     boxShadow: currentCard.style?.borderStyle === 'glowing' ? `0 0 20px ${currentCard.style?.borderColor}` : 'var(--shadow-elevated)',
                                     flexDirection: 'column',
-                                    gap: 16, padding: '24px 32px', overflowY: 'auto'
+                                    gap: 16, padding: isMobile ? '20px 24px' : '24px 32px', overflowY: 'auto'
                                 }}>
-                                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', flexShrink: 0, opacity: 0.6 }}>QUESTION</div>
-                                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.5, whiteSpace: 'pre-wrap', paddingBottom: 16, flex: 1 }}>
+                                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', flexShrink: 0, opacity: 0.6 }}>QUESTION</div>
+                                    <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 700, lineHeight: 1.5, whiteSpace: 'pre-wrap', paddingBottom: 16, flex: 1 }}>
                                         <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MarkdownComponents}>{currentCard.question}</ReactMarkdown>
                                     </div>
-                                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 'auto', flexShrink: 0, opacity: 0.6 }}>Click to reveal answer</div>
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 'auto', flexShrink: 0, opacity: 0.6 }}>Tap to reveal</div>
                                 </div>
                                 <div className="flashcard-back" style={{
                                     background: currentCard.style?.background || 'linear-gradient(135deg, rgba(var(--brand-violet-rgb),0.15) 0%, rgba(var(--brand-cyan-rgb, 6,182,212),0.15) 100%)',
@@ -524,10 +532,10 @@ export default function FlashcardsPage() {
                                     boxSizing: 'border-box',
                                     boxShadow: currentCard.style?.borderStyle === 'glowing' ? `0 0 20px ${currentCard.style?.borderColor}` : 'var(--shadow-elevated)',
                                     flexDirection: 'column',
-                                    gap: 16, borderRadius: 24, padding: '24px 32px', overflowY: 'auto'
+                                    gap: 16, borderRadius: 24, padding: isMobile ? '20px 24px' : '24px 32px', overflowY: 'auto'
                                 }}>
-                                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--brand-violet-light)', flexShrink: 0, opacity: 0.8 }}>ANSWER</div>
-                                    <div style={{ fontSize: 17, fontWeight: 500, lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingBottom: 16, flex: 1 }}>
+                                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--brand-violet-light)', flexShrink: 0, opacity: 0.8 }}>ANSWER</div>
+                                    <div style={{ fontSize: isMobile ? 15 : 17, fontWeight: 500, lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingBottom: 16, flex: 1 }}>
                                         <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]} components={MarkdownComponents}>{currentCard.answer}</ReactMarkdown>
                                     </div>
                                 </div>

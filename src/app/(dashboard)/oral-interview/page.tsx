@@ -187,7 +187,7 @@ export default function OralInterviewPage() {
                     ) : (
                         <div>
                             <header style={{ textAlign: 'center', marginBottom: 40 }}>
-                                <div className="page-container" style={{ fontSize: 48, marginBottom: 16 }}>{r.score >= 80 ? 'ðŸ†' : r.score >= 60 ? 'ðŸŽ“' : 'ðŸ“š'}</div>
+                                <div className="page-container" style={{ fontSize: 48, marginBottom: 16 }}>{r.score >= 80 ? '🏆' : r.score >= 60 ? '🎓' : '📚'}</div>
                                 <h1 style={{ fontSize: 32, fontWeight: 900, color: 'var(--text-primary)' }}>Achievement: {r.achievementLevel}</h1>
                                 <div className="page-container" style={{ display: 'inline-block', marginTop: 12, padding: '8px 24px', borderRadius: 40, background: 'rgba(139,92,246,0.1)', border: '1px solid var(--brand-violet)', color: 'var(--brand-violet-light)', fontWeight: 800 }}>
                                     Success Percentage: {r.score}%
@@ -245,7 +245,7 @@ export default function OralInterviewPage() {
                         display: 'inline-block',
                         marginBottom: 12
                     }}>
-                        ðŸŽ™ï¸ Oral Interview Practice
+                        🎙️ Oral Interview Practice
                     </h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: 16 }}>
                         Practice your interview skills with realistic scenarios and feedback.
@@ -350,7 +350,7 @@ export default function OralInterviewPage() {
                     </section>
 
                     <button onClick={startInterview} disabled={loading} className="btn-primary" style={{ padding: '16px', justifyContent: 'center', fontSize: 16, marginTop: 8 }}>
-                        {loading ? 'â³ Preparing...' : 'ðŸš€ Start Interview'}
+                        {loading ? 'â³ Preparing...' : '🚀 Start Interview'}
                     </button>
                 </div>
             </div>
@@ -393,7 +393,7 @@ export default function OralInterviewPage() {
                     </div>
                     <div className="page-container" style={{ padding: 20, borderTop: '1px solid #333', display: 'flex', gap: 12 }}>
                         <button onClick={() => setIsMuted(!isMuted)} className="btn-secondary" style={{ flex: 1, padding: '12px' }}>
-                            {isMuted ? 'ðŸ”‡ Unmute' : 'ðŸŽ™ï¸ Mic Active'}
+                            {isMuted ? '🔇 Unmute' : '🎙️ Mic Active'}
                         </button>
                         <button onClick={() => { if (confirm('End interview and get report?')) endInterview(); }} className="btn-primary" style={{ flex: 1, background: '#f43f5e' }}>
                             Stop Interview

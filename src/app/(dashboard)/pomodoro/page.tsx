@@ -57,7 +57,16 @@ export default function PomodoroPage() {
   const [customMinutes, setCustomMinutes] = useState(25);
   const [showCustom, setShowCustom] = useState(false);
   const [musicTrack, setMusicTrack] = useState<MusicTrack>("off");
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const secondsElapsedRef = useRef(0);
   const totalSeconds = (showCustom ? customMinutes : MODES[mode].minutes) * 60;
   const progress = 1 - timeLeft / totalSeconds;
@@ -136,12 +145,20 @@ export default function PomodoroPage() {
   const strokeDashoffset = circumference * (1 - progress);
   const modeInfo = MODES[mode];
   return (
-    <div className="page-split" style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
+    <div className="page-container" style={{ display: "flex", flexDirection: isMobile ? "column" : "row", minHeight: "100vh", position: "relative" }}>
+      {isMobile && (
+        <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.02)' }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Pomodoro</h2>
+          <button onClick={() => setShowSidebar(!showSidebar)} style={{ background: 'none', border: '1px solid var(--border-subtle)', padding: '6px 12px', borderRadius: 8, color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 14 }}>
+            <span>📻</span> Radio
+          </button>
+        </div>
+      )}
       { }
       <div
         style={{
           flex: 1,
-          padding: "40px",
+          padding: isMobile ? "20px" : "40px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -173,6 +190,8 @@ export default function PomodoroPage() {
           style={{
             display: "flex",
             gap: 8,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
             marginBottom: 48,
             background: "rgba(255,255,255,0.04)",
             padding: 6,
@@ -375,116 +394,136 @@ export default function PomodoroPage() {
         </div>
       </div>
       { }
-      <div
-        className="page-split-sidebar"
-        style={{
-          width: 320,
-          padding: 32,
-          borderLeft: "1px solid var(--border-subtle)",
-          background: "rgba(255,255,255,0.01)",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 16,
-            fontWeight: 800,
-            color: "var(--text-primary)",
-            marginBottom: 4,
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <span>📻</span> Focus Radio
-        </div>
-        <div
-          style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}
-        >
-          24/7 ambient background streams
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {(Object.keys(MUSIC_TRACKS) as MusicTrack[]).map((track) => {
-            const isOff = track === "off";
-            const isSelected = musicTrack === track;
-            return (
-              <button
-                key={track}
-                onClick={() => setMusicTrack(track)}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: 12,
-                  border:
-                    "1px solid " +
-                    (isSelected
-                      ? "rgba(255,255,255,0.15)"
-                      : "rgba(255,255,255,0.04)"),
-                  background: isSelected
-                    ? "rgba(255,255,255,0.05)"
-                    : "transparent",
-                  color: isSelected
-                    ? isOff
-                      ? "#f43f5e"
-                      : "#10b981"
-                    : "var(--text-secondary)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  textAlign: "left",
-                  boxShadow:
-                    isSelected && !isOff
-                      ? "0 0 20px rgba(16, 185, 129, 0.1)"
-                      : "none",
-                }}
-              >
-                <span style={{ fontSize: 18 }}>{MUSIC_TRACKS[track].icon}</span>
-                <span style={{ flex: 1 }}>{MUSIC_TRACKS[track].label}</span>
-                {isSelected && !isOff && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: "#10b981",
-                      boxShadow: "0 0 8px #10b981",
-                    }}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-        { }
-        {musicTrack !== "off" && (
-          <div
+      <AnimatePresence>
+        {(!isMobile || showSidebar) && (
+          <motion.div
+            initial={isMobile ? { x: "100%" } : false}
+            animate={{ x: 0 }}
+            exit={isMobile ? { x: "100%" } : undefined}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
             style={{
-              position: "absolute",
-              width: 0,
-              height: 0,
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
+              width: isMobile ? "100%" : 320,
+              padding: 32,
+              borderLeft: isMobile ? "none" : "1px solid var(--border-subtle)",
+              background: isMobile ? "var(--bg-primary)" : "rgba(255,255,255,0.01)",
+              display: "flex",
+              flexDirection: "column",
+              position: isMobile ? 'fixed' : 'relative',
+              top: isMobile ? 65 : 0,
+              right: 0,
+              bottom: isMobile ? 0 : 0,
+              height: isMobile ? "100vh" : "100%",
+              zIndex: isMobile ? 9999 : 1,
+              overflowY: 'auto'
             }}
           >
-            <iframe
-              width="100"
-              height="100"
-              src={`https://www.youtube.com/embed/${MUSIC_TRACKS[musicTrack].videoId}?autoplay=1&controls=0&showinfo=0&rel=0&playsinline=1`}
-              title="Pomodoro Music"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+            {isMobile && (
+              <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Background Audio</h3>
+                <button onClick={() => setShowSidebar(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: 24, cursor: 'pointer' }}>×</button>
+              </div>
+            )}
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                marginBottom: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span>📻</span> Focus Radio
+            </div>
+            <div
+              style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}
+            >
+              24/7 ambient background streams
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {(Object.keys(MUSIC_TRACKS) as MusicTrack[]).map((track) => {
+                const isOff = track === "off";
+                const isSelected = musicTrack === track;
+                return (
+                  <button
+                    key={track}
+                    onClick={() => setMusicTrack(track)}
+                    style={{
+                      padding: "12px 16px",
+                      borderRadius: 12,
+                      border:
+                        "1px solid " +
+                        (isSelected
+                          ? "rgba(255,255,255,0.15)"
+                          : "rgba(255,255,255,0.04)"),
+                      background: isSelected
+                        ? "rgba(255,255,255,0.05)"
+                        : "transparent",
+                      color: isSelected
+                        ? isOff
+                          ? "#f43f5e"
+                          : "#10b981"
+                        : "var(--text-secondary)",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      textAlign: "left",
+                      boxShadow:
+                        isSelected && !isOff
+                          ? "0 0 20px rgba(16, 185, 129, 0.1)"
+                          : "none",
+                    }}
+                  >
+                    <span style={{ fontSize: 18 }}>{MUSIC_TRACKS[track].icon}</span>
+                    <span style={{ flex: 1 }}>{MUSIC_TRACKS[track].label}</span>
+                    {isSelected && !isOff && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: "#10b981",
+                          boxShadow: "0 0 8px #10b981",
+                        }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            { }
+            {musicTrack !== "off" && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: 0,
+                  height: 0,
+                  overflow: "hidden",
+                  opacity: 0,
+                  pointerEvents: "none",
+                }}
+              >
+                <iframe
+                  width="100"
+                  height="100"
+                  src={`https://www.youtube.com/embed/${MUSIC_TRACKS[musicTrack].videoId}?autoplay=1&controls=0&showinfo=0&rel=0&playsinline=1`}
+                  title="Pomodoro Music"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }

@@ -62,8 +62,21 @@ export default function AiTutorPage() {
   const [loading, setLoading] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState("socratic");
   const [sessionStarted, setSessionStarted] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   useActivityTracker();
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      setShowSidebar(!mobile);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -113,6 +126,7 @@ export default function AiTutorPage() {
         { role: "assistant", content: `⚠️ ${msg}`, timestamp: new Date() },
       ]);
     }
+    if (isMobile) setShowSidebar(false);
     setLoading(false);
   }
   function clearSession() {
@@ -121,158 +135,191 @@ export default function AiTutorPage() {
   }
   const persona = AI_PERSONAS.find((p) => p.id === selectedPersona)!;
   return (
-    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      { }
-      <div
-        className="page-split-sidebar"
-        style={{
-          width: 280,
-          flexShrink: 0,
-          borderRight: "1px solid var(--border-subtle)",
-          background: "var(--bg-secondary)",
-          display: "flex",
-          flexDirection: "column",
-          overflowY: "auto",
-        }}
-      >
-        <div
-          style={{
-            padding: "20px 16px",
-            borderBottom: "1px solid var(--border-subtle)",
-          }}
-        >
-          <h2
+    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
+      {/* Mobile Overlay Background */}
+      <AnimatePresence>
+        {isMobile && showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setShowSidebar(false)}
             style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: "var(--text-primary)",
-              marginBottom: 4,
+              position: isMobile ? "fixed" : "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 9998,
+              backdropFilter: "blur(2px)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {(!isMobile || showSidebar) && (
+          <motion.div
+            initial={isMobile ? { x: "-100%" } : false}
+            animate={{ x: 0 }}
+            exit={isMobile ? { x: "-100%" } : undefined}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="page-split-sidebar"
+            style={{
+              width: isMobile ? "85%" : 280,
+              maxWidth: 320,
+              flexShrink: 0,
+              borderRight: "1px solid var(--border-subtle)",
+              background: "var(--bg-secondary)",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              position: isMobile ? "fixed" : "relative",
+              zIndex: 9999,
+              top: isMobile ? 0 : undefined,
+              bottom: isMobile ? 0 : undefined,
+              height: isMobile ? "100vh" : "100%",
+              boxShadow: isMobile ? "4px 0 24px rgba(0,0,0,0.5)" : "none",
             }}
           >
-            🤖 Study Companion
-          </h2>
-          <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
-            Choose your study companion
-          </p>
-        </div>
-        <div
-          style={{
-            padding: 12,
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-          }}
-        >
-          {AI_PERSONAS.map((p) => (
-            <motion.div
-              key={p.id}
-              whileHover={{ x: 3 }}
-              onClick={() => {
-                setSelectedPersona(p.id);
-                clearSession();
-              }}
+            <div
               style={{
-                padding: "14px",
-                borderRadius: 12,
-                border: `1px solid ${selectedPersona === p.id ? `${p.color}50` : "transparent"}`,
-                background:
-                  selectedPersona === p.id
-                    ? `${p.color}12`
-                    : "rgba(255,255,255,0.02)",
-                cursor: "pointer",
-                transition: "all 0.2s",
+                padding: "20px 16px",
+                borderBottom: "1px solid var(--border-subtle)",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  marginBottom: 4,
+                }}
+              >
+                🤖 Study Companion
+              </h2>
+              <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                Choose your study companion
+              </p>
+            </div>
+            <div
+              style={{
+                padding: 12,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
+              {AI_PERSONAS.map((p) => (
+                <motion.div
+                  key={p.id}
+                  whileHover={{ x: 3 }}
+                  onClick={() => {
+                    setSelectedPersona(p.id);
+                    clearSession();
+                  }}
+                  style={{
+                    padding: "14px",
+                    borderRadius: 12,
+                    border: `1px solid ${selectedPersona === p.id ? `${p.color}50` : "transparent"}`,
+                    background:
+                      selectedPersona === p.id
+                        ? `${p.color}12`
+                        : "rgba(255,255,255,0.02)",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 6,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        background: `${p.color}20`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 16,
+                      }}
+                    >
+                      {p.icon}
+                    </div>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color:
+                          selectedPersona === p.id
+                            ? p.color
+                            : "var(--text-primary)",
+                      }}
+                    >
+                      {p.name}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: 11,
+                      color: "var(--text-muted)",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {p.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+            <div
+              style={{
+                padding: 12,
+                borderTop: "1px solid var(--border-subtle)",
+                marginTop: "auto",
               }}
             >
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 6,
-                }}
-              >
-                <div
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    background: `${p.color}20`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 16,
-                  }}
-                >
-                  {p.icon}
-                </div>
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color:
-                      selectedPersona === p.id
-                        ? p.color
-                        : "var(--text-primary)",
-                  }}
-                >
-                  {p.name}
-                </span>
-              </div>
-              <p
-                style={{
                   fontSize: 11,
                   color: "var(--text-muted)",
-                  lineHeight: 1.5,
+                  marginBottom: 8,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
                 }}
               >
-                {p.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-        <div
-          style={{
-            padding: 12,
-            borderTop: "1px solid var(--border-subtle)",
-            marginTop: "auto",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 11,
-              color: "var(--text-muted)",
-              marginBottom: 8,
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}
-          >
-            Try these topics
-          </div>
-          {STARTER_TOPICS.map((t) => (
-            <button
-              key={t}
-              onClick={() => sendMessage(t)}
-              style={{
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 10px",
-                marginBottom: 4,
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: 8,
-                color: "var(--text-secondary)",
-                fontSize: 12,
-                cursor: "pointer",
-                fontFamily: "Inter",
-                transition: "all 0.15s",
-              }}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-      </div>
+                Try these topics
+              </div>
+              {STARTER_TOPICS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => sendMessage(t)}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "8px 10px",
+                    marginBottom: 4,
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: 8,
+                    color: "var(--text-secondary)",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    fontFamily: "Inter",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       { }
       <div className="page-split-main" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         { }
@@ -283,9 +330,27 @@ export default function AiTutorPage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            background: "var(--bg-secondary)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {isMobile && (
+              <button
+                onClick={() => setShowSidebar(true)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-primary)",
+                  fontSize: 24,
+                  cursor: "pointer",
+                  padding: 0,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                ☰
+              </button>
+            )}
             <div
               style={{
                 width: 40,
@@ -341,18 +406,26 @@ export default function AiTutorPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              style={{ textAlign: "center", margin: "auto" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: isMobile ? "flex-start" : "center",
+                margin: isMobile ? "0" : "auto",
+                flex: 1,
+                paddingTop: isMobile ? "20px" : "0",
+              }}
             >
               <div
                 style={{
-                  width: 80,
-                  height: 80,
+                  width: isMobile ? 64 : 80,
+                  height: isMobile ? 64 : 80,
                   borderRadius: 24,
                   background: `${persona.color}20`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 40,
+                  fontSize: isMobile ? 32 : 40,
                   margin: "0 auto 16px",
                   border: `1px solid ${persona.color}40`,
                 }}
@@ -361,10 +434,11 @@ export default function AiTutorPage() {
               </div>
               <h2
                 style={{
-                  fontSize: 22,
+                  fontSize: isMobile ? 20 : 22,
                   fontWeight: 800,
                   color: "var(--text-primary)",
                   marginBottom: 8,
+                  textAlign: "center",
                 }}
               >
                 Start a session with {persona.name}
@@ -374,11 +448,56 @@ export default function AiTutorPage() {
                   color: "var(--text-secondary)",
                   fontSize: 14,
                   maxWidth: 400,
-                  margin: "0 auto",
+                  textAlign: "center",
+                  marginBottom: 32,
                 }}
               >
                 {persona.desc}
               </p>
+
+              {isMobile && (
+                <div style={{ width: "100%", maxWidth: 400 }}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "var(--text-muted)",
+                      marginBottom: 12,
+                      fontWeight: 600,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      textAlign: "center",
+                    }}
+                  >
+                    Try these topics
+                  </div>
+                  {STARTER_TOPICS.slice(0, 3).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => sendMessage(t)}
+                      style={{
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "14px 16px",
+                        marginBottom: 8,
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid var(--border-subtle)",
+                        borderRadius: 12,
+                        color: "var(--text-secondary)",
+                        fontSize: 14,
+                        cursor: "pointer",
+                        fontFamily: "Inter",
+                        transition: "all 0.15s",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>💡</span> {t}
+                    </button>
+                  ))}
+                </div>
+              )}
             </motion.div>
           ) : (
             messages.map((msg, i) => (
@@ -526,16 +645,6 @@ export default function AiTutorPage() {
               Send ↑
             </motion.button>
           </div>
-          <p
-            style={{
-              marginTop: 8,
-              fontSize: 11,
-              color: "var(--text-muted)",
-              textAlign: "center",
-            }}
-          >
-            Powered by DeepSeek R1 (free) via OpenRouter
-          </p>
         </div>
       </div>
     </div>

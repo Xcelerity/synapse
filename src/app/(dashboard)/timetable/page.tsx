@@ -33,12 +33,21 @@ interface TimeBlock {
   color: string;
   completed: boolean;
 }
+
 export default function TimetablePage() {
   const { user, gamification, addXP, addStudyMinutes } = useAuthStore();
   const [blocks, setBlocks] = useState<TimeBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [calendarPlugins, setCalendarPlugins] = useState<any[]>([]);
   const [draggableInitialized, setDraggableInitialized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [customTasks, setCustomTasks] = useState(DEFAULT_TASKS);
   const [newTaskForm, setNewTaskForm] = useState({
     title: "",
@@ -301,7 +310,7 @@ export default function TimetablePage() {
   }
   const calendarEvents = blocks.map((b) => ({
     id: b.id,
-    title: b.title + (b.completed ? " âœ…" : ""),
+    title: b.title + (b.completed ? " ✅" : ""),
     start: b.start,
     end: b.end,
     backgroundColor: b.completed ? "var(--bg-secondary)" : b.color,
@@ -315,28 +324,21 @@ export default function TimetablePage() {
       : 0;
   return (
     <div className="page-container" style={{
-        padding: "32px 40px",
-        display: "flex",
-        gap: 32,
-        height: "100%",
-        minHeight: "100vh",
-        overflow: "hidden",
-      }}
+      padding: isMobile ? "16px 20px" : "32px 40px",
+      display: "flex",
+      flexDirection: "column",
+      gap: isMobile ? 24 : 32,
+      height: isMobile ? "auto" : "100%",
+      minHeight: "100vh",
+      overflow: isMobile ? "auto" : "hidden",
+    }}
     >
-      { }
-      <div className="page-container" style={{
-          width: 340,
-          flexShrink: 0,
-          display: "flex",
-          flexDirection: "column",
-          gap: 24,
-          overflowY: "auto",
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}
       >
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
+        <div>
           <h1
             style={{
               fontSize: 24,
@@ -352,319 +354,337 @@ export default function TimetablePage() {
               color: "var(--text-secondary)",
               fontSize: 13,
               lineHeight: 1.5,
-              marginBottom: 12,
+              marginBottom: 0,
             }}
           >
             Drag tasks directly onto the grid, or click and highlight a
             timeframe to auto-create blocks.
           </p>
-          <div className="page-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <label
-              style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-              }}
-            >
-              Jump To Date:
-            </label>
-            <input
-              type="date"
-              className="input-field"
-              style={{ padding: "6px 12px", fontSize: 13, flex: 1 }}
-              onChange={(e) => {
-                if (e.target.value && calendarRef.current) {
-                  calendarRef.current.getApi().gotoDate(e.target.value);
-                }
-              }}
-            />
-          </div>
-        </motion.div>
+        </div>
+        <div className="page-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <label
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: "var(--text-muted)",
+              textTransform: "uppercase",
+            }}
+          >
+            Jump To Date:
+          </label>
+          <input
+            type="date"
+            className="input-field"
+            style={{ padding: "6px 12px", fontSize: 13, flex: 1, minWidth: 140 }}
+            onChange={(e) => {
+              if (e.target.value && calendarRef.current) {
+                calendarRef.current.getApi().gotoDate(e.target.value);
+              }
+            }}
+          />
+        </div>
+      </motion.div>
+
+      <div style={{
+        display: "flex",
+        flexDirection: isMobile ? "column-reverse" : "row",
+        gap: isMobile ? 24 : 32,
+        flex: 1,
+        minHeight: 0,
+      }}>
         { }
-        <div className="glass-card" style={{ padding: 20 }}>
-          <div className="page-container" style={{
+        <div className="page-container" style={{
+          width: isMobile ? "100%" : 340,
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: 24,
+          overflowY: isMobile ? "visible" : "auto",
+        }}>
+          <div className="glass-card" style={{ padding: 20 }}>
+            <div className="page-container" style={{
               display: "flex",
               justifyContent: "space-between",
               marginBottom: 8,
               fontSize: 13,
               fontWeight: 700,
             }}
-          >
-            <span>Daily Progress</span>
-            <span style={{ color: "var(--brand-emerald)" }}>
-              {Math.round(progress)}%
-            </span>
-          </div>
-          <div
-            className="progress-bar"
-            style={{ background: "var(--bg-primary)", height: 8 }}
-          >
+            >
+              <span>Daily Progress</span>
+              <span style={{ color: "var(--brand-emerald)" }}>
+                {Math.round(progress)}%
+              </span>
+            </div>
             <div
-              className="progress-fill"
-              style={{
-                width: progress + "%",
-                background: "var(--gradient-emerald)",
-              }}
-            />
+              className="progress-bar"
+              style={{ background: "var(--bg-primary)", height: 8 }}
+            >
+              <div
+                className="progress-fill"
+                style={{
+                  width: progress + "%",
+                  background: "var(--gradient-emerald)",
+                }}
+              />
+            </div>
           </div>
-        </div>
-        { }
-        <div
-          className="glass-card"
-          style={{
-            padding: 20,
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div className="page-container" style={{
+          { }
+          <div
+            className="glass-card"
+            style={{
+              padding: 20,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div className="page-container" style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
               marginBottom: 16,
             }}
-          >
-            <h3
-              style={{
-                fontSize: 15,
-                fontWeight: 700,
-                color: "var(--text-primary)",
-              }}
             >
-              Task Bank
-            </h3>
-            <span
-              style={{
-                fontSize: 11,
-                background: "var(--bg-primary)",
-                padding: "2px 8px",
-                borderRadius: 12,
-                color: "var(--text-muted)",
-              }}
-            >
-              Drag me
-            </span>
-          </div>
-          <div
-            ref={externalEventsRef}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-              minHeight: 150,
-            }}
-          >
-            {customTasks.map((task, i) => (
-              <div
-                key={i}
-                className="fc-event glass-card-hover"
-                data-duration={task.duration}
+              <h3
                 style={{
-                  padding: "12px 16px",
-                  background: task.color,
-                  color: "#fff",
-                  borderRadius: 12,
-                  cursor: "grab",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  border: "none",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
                 }}
               >
-                <span>{task.title}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteTaskFromBank(i);
-                  }}
-                  style={{
-                    background: "rgba(0,0,0,0.2)",
-                    border: "none",
-                    color: "white",
-                    borderRadius: "50%",
-                    width: 24,
-                    height: 24,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  title="Remove from Bank"
-                >
-                  âœ•
-                </button>
-              </div>
-            ))}
-          </div>
-          { }
-          <form
-            onSubmit={handleAddDirectBlock}
-            style={{
-              marginTop: 24,
-              paddingTop: 16,
-              borderTop: "1px solid var(--border-subtle)",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
-            <h4
+                Task Bank
+              </h3>
+              <span
+                style={{
+                  fontSize: 11,
+                  background: "var(--bg-primary)",
+                  padding: "2px 8px",
+                  borderRadius: 12,
+                  color: "var(--text-muted)",
+                }}
+              >
+                Drag me
+              </span>
+            </div>
+            <div
+              ref={externalEventsRef}
               style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: "var(--text-secondary)",
-                textTransform: "uppercase",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                minHeight: 150,
               }}
             >
-              Direct Add Block
-            </h4>
-            <input
-              required
-              className="input-field"
-              placeholder="Block Title"
-              value={newTaskForm.title}
-              onChange={(e) =>
-                setNewTaskForm({ ...newTaskForm, title: e.target.value })
-              }
-              style={{ padding: "10px 14px", fontSize: 13 }}
-            />
-            <div className="page-container" style={{ display: "flex", gap: 12 }}>
+              {customTasks.map((task, i) => (
+                <div
+                  key={i}
+                  className="fc-event glass-card-hover"
+                  data-duration={task.duration}
+                  style={{
+                    padding: "12px 16px",
+                    background: task.color,
+                    color: "#fff",
+                    borderRadius: 12,
+                    cursor: "grab",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    border: "none",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>{task.title}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTaskFromBank(i);
+                    }}
+                    style={{
+                      background: "rgba(0,0,0,0.2)",
+                      border: "none",
+                      color: "white",
+                      borderRadius: "50%",
+                      width: 24,
+                      height: 24,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    title="Remove from Bank"
+                  >
+                    ✖️
+                  </button>
+                </div>
+              ))}
+            </div>
+            { }
+            <form
+              onSubmit={handleAddDirectBlock}
+              style={{
+                marginTop: 24,
+                paddingTop: 16,
+                borderTop: "1px solid var(--border-subtle)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "var(--text-secondary)",
+                  textTransform: "uppercase",
+                }}
+              >
+                Direct Add Block
+              </h4>
               <input
                 required
-                type="date"
                 className="input-field"
-                value={newTaskForm.date}
+                placeholder="Block Title"
+                value={newTaskForm.title}
                 onChange={(e) =>
-                  setNewTaskForm({ ...newTaskForm, date: e.target.value })
+                  setNewTaskForm({ ...newTaskForm, title: e.target.value })
                 }
-                style={{ padding: "10px 14px", fontSize: 13, flex: 2 }}
+                style={{ padding: "10px 14px", fontSize: 13 }}
               />
-              <input
-                type="color"
-                value={newTaskForm.color}
-                onChange={(e) =>
-                  setNewTaskForm({ ...newTaskForm, color: e.target.value })
-                }
-                style={{
-                  width: 42,
-                  height: 42,
-                  padding: 0,
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  background: "transparent",
-                }}
-              />
-            </div>
-            <div className="page-container" style={{ display: "flex", gap: 12 }}>
-              <div className="page-container" style={{ flex: 1 }}>
-                <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
-                  Start
-                </label>
+              <div className="page-container" style={{ display: "flex", gap: 12 }}>
                 <input
-                  type="time"
-                  step="1"
                   required
+                  type="date"
                   className="input-field"
-                  value={newTaskForm.startTime}
+                  value={newTaskForm.date}
                   onChange={(e) =>
-                    setNewTaskForm({
-                      ...newTaskForm,
-                      startTime: e.target.value,
-                    })
+                    setNewTaskForm({ ...newTaskForm, date: e.target.value })
                   }
-                  style={{ padding: "8px 10px", fontSize: 12, width: "100%" }}
+                  style={{ padding: "10px 14px", fontSize: 13, flex: 2 }}
+                />
+                <input
+                  type="color"
+                  value={newTaskForm.color}
+                  onChange={(e) =>
+                    setNewTaskForm({ ...newTaskForm, color: e.target.value })
+                  }
+                  style={{
+                    width: 42,
+                    height: 42,
+                    padding: 0,
+                    border: "none",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                    background: "transparent",
+                  }}
                 />
               </div>
-              <div className="page-container" style={{ flex: 1 }}>
-                <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
-                  End
-                </label>
-                <input
-                  type="time"
-                  step="1"
-                  required
-                  className="input-field"
-                  value={newTaskForm.endTime}
-                  onChange={(e) =>
-                    setNewTaskForm({ ...newTaskForm, endTime: e.target.value })
-                  }
-                  style={{ padding: "8px 10px", fontSize: 12, width: "100%" }}
-                />
+              <div className="page-container" style={{ display: "flex", gap: 12 }}>
+                <div className="page-container" style={{ flex: 1 }}>
+                  <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
+                    Start
+                  </label>
+                  <input
+                    type="time"
+                    step="1"
+                    required
+                    className="input-field"
+                    value={newTaskForm.startTime}
+                    onChange={(e) =>
+                      setNewTaskForm({
+                        ...newTaskForm,
+                        startTime: e.target.value,
+                      })
+                    }
+                    style={{ padding: "8px 10px", fontSize: 12, width: "100%" }}
+                  />
+                </div>
+                <div className="page-container" style={{ flex: 1 }}>
+                  <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
+                    End
+                  </label>
+                  <input
+                    type="time"
+                    step="1"
+                    required
+                    className="input-field"
+                    value={newTaskForm.endTime}
+                    onChange={(e) =>
+                      setNewTaskForm({ ...newTaskForm, endTime: e.target.value })
+                    }
+                    style={{ padding: "8px 10px", fontSize: 12, width: "100%" }}
+                  />
+                </div>
               </div>
-            </div>
-            <button
-              type="submit"
-              className="btn-secondary"
-              style={{ padding: "10px", fontSize: 13, fontWeight: 700 }}
-            >
-              + Add to Grid
-            </button>
-          </form>
-          <div className="page-container" style={{
+              <button
+                type="submit"
+                className="btn-secondary"
+                style={{ padding: "10px", fontSize: 13, fontWeight: 700 }}
+              >
+                + Add to Grid
+              </button>
+            </form>
+            <div className="page-container" style={{
               marginTop: 24,
               paddingTop: 16,
               borderTop: "1px solid var(--border-subtle)",
             }}
-          >
-            <h3
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: "var(--text-muted)",
-                marginBottom: 12,
-              }}
             >
-              Routines
-            </h3>
-            <div className="page-container" style={{
+              <h3
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "var(--text-muted)",
+                  marginBottom: 12,
+                }}
+              >
+                Routines
+              </h3>
+              <div className="page-container" style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 8,
               }}
-            >
-              <button
-                className="btn-secondary"
-                onClick={() => toast.success("Weekend routine loaded!")}
-                style={{ fontSize: 12 }}
               >
-                ðŸ–ï¸ Weekend
-              </button>
-              <button
-                className="btn-secondary"
-                onClick={() =>
-                  toast.success("Saved current blocks as template!")
-                }
-                style={{ fontSize: 12 }}
-              >
-                ðŸ’¾ Save
-              </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => toast.success("🏖️ Weekend routine loaded!")}
+                  style={{ fontSize: 12 }}
+                >
+                  🏖️ Weekend
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() =>
+                    toast.success("Saved current blocks as template!")
+                  }
+                  style={{ fontSize: 12 }}
+                >
+                  💾 Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      { }
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="glass-card fc-dark-theme"
-        style={{
-          flex: 1,
-          padding: 24,
-          borderRadius: 24,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+        { }
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="glass-card fc-dark-theme"
+          style={{
+            flex: 1,
+            padding: 24,
+            borderRadius: 24,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            minHeight: isMobile ? "65vh" : "auto",
+          }}
+        >
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
                     .fc-dark-theme .fc-theme-standard td, .fc-dark-theme .fc-theme-standard th { border-color: var(--border-subtle); }
                     .fc-dark-theme .fc-col-header-cell { padding: 12px; background: rgba(0,0,0,0.2); }
                     .fc-dark-theme .fc-timegrid-slot { height: 40px; }
@@ -672,53 +692,60 @@ export default function TimetablePage() {
                     .fc-dark-theme .fc-event:hover { transform: scale(1.02); z-index: 10 !important; }
                     .fc-button-primary { background: var(--bg-secondary) !important; border: 1px solid var(--border-subtle) !important; text-transform: capitalize !important; font-family: Inter !important; }
                     .fc-button-active { background: var(--brand-violet) !important; color: white !important; border-color: var(--brand-violet) !important; }
+                    @media (max-width: 768px) {
+                        .fc .fc-toolbar { flex-direction: column !important; gap: 12px; }
+                        .fc .fc-toolbar-title { font-size: 20px !important; text-align: center; }
+                        .fc .fc-button { padding: 6px 10px !important; font-size: 12px !important; }
+                        .fc-toolbar-chunk { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+                    }
                 `,
-          }}
-        />
-        {calendarPlugins.length > 0 ? (
-          <div className="page-container" style={{ flex: 1, minHeight: 0 }}>
-            <FullCalendar
-              {...({ ref: calendarRef } as any)}
-              plugins={calendarPlugins}
-              initialView="timeGridDay"
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "timeGridDay,timeGridWeek,dayGridMonth",
-              }}
-              slotMinTime="00:00:00"
-              slotMaxTime="24:00:00"
-              slotEventOverlap={false}
-              allDaySlot={false}
-              editable={true}
-              droppable={true}
-              selectable={true}
-              selectMirror={true}
-              select={handleDateSelect}
-              events={calendarEvents}
-              eventReceive={handleEventReceive}
-              eventChange={handleEventChange}
-              eventClick={(info) => {
-                openEditModal(info.event);
-              }}
-              height="100%"
-            />
-          </div>
-        ) : (
-          <div className="page-container" style={{
+            }}
+          />
+          {calendarPlugins.length > 0 ? (
+            <div className="page-container" style={{ flex: 1, minHeight: 0 }}>
+              <FullCalendar
+                {...({ ref: calendarRef } as any)}
+                plugins={calendarPlugins}
+                initialView="timeGridDay"
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "timeGridDay,timeGridWeek,dayGridMonth",
+                }}
+                slotMinTime="00:00:00"
+                slotMaxTime="24:00:00"
+                slotEventOverlap={false}
+                allDaySlot={false}
+                editable={true}
+                droppable={true}
+                selectable={true}
+                selectMirror={true}
+                select={handleDateSelect}
+                events={calendarEvents}
+                eventReceive={handleEventReceive}
+                eventChange={handleEventChange}
+                eventClick={(info) => {
+                  openEditModal(info.event);
+                }}
+                height="100%"
+              />
+            </div>
+          ) : (
+            <div className="page-container" style={{
               flex: 1,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
-          >
-            <div
-              className="shimmer"
-              style={{ width: "100%", height: "100%", borderRadius: 16 }}
-            />
-          </div>
-        )}
-      </motion.div>
+            >
+              <div
+                className="shimmer"
+                style={{ width: "100%", height: "100%", borderRadius: 16 }}
+              />
+            </div>
+          )}
+        </motion.div>
+      </div>
       { }
       <AnimatePresence>
         {selectedEvent && (
@@ -925,22 +952,22 @@ export default function TimetablePage() {
               ) : (
                 <div>
                   <div className="page-container" style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                    }}
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                  }}
                   >
                     <div>
                       <div className="page-container" style={{
-                          display: "inline-block",
-                          padding: "4px 12px",
-                          background: selectedEvent.extendedProps.originalColor,
-                          color: "white",
-                          borderRadius: 20,
-                          fontSize: 12,
-                          fontWeight: 800,
-                          marginBottom: 12,
-                        }}
+                        display: "inline-block",
+                        padding: "4px 12px",
+                        background: selectedEvent.extendedProps.originalColor,
+                        color: "white",
+                        borderRadius: 20,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        marginBottom: 12,
+                      }}
                       >
                         Time Block
                       </div>
@@ -951,13 +978,13 @@ export default function TimetablePage() {
                           color: "var(--text-primary)",
                         }}
                       >
-                        {selectedEvent.title.replace(" âœ…", "")}
+                        {selectedEvent.title.replace(" ✅", "")}
                       </h2>
                       <div className="page-container" style={{
-                          fontSize: 14,
-                          color: "var(--text-muted)",
-                          marginTop: 4,
-                        }}
+                        fontSize: 14,
+                        color: "var(--text-muted)",
+                        marginTop: 4,
+                      }}
                       >
                         {new Date(selectedEvent.startStr).toLocaleTimeString(
                           [],
@@ -983,7 +1010,7 @@ export default function TimetablePage() {
                         fontWeight: 600,
                       }}
                     >
-                      âœï¸ Edit
+                      ✏️ Edit
                     </button>
                   </div>
                   <div className="page-container" style={{ display: "flex", gap: 12, marginTop: 32 }}>
@@ -997,7 +1024,7 @@ export default function TimetablePage() {
                           background: "var(--brand-emerald)",
                         }}
                       >
-                        âœ“ Mark Completed
+                        ✅ Mark Completed
                       </button>
                     )}
                     <button
@@ -1010,7 +1037,7 @@ export default function TimetablePage() {
                         color: "#f43f5e",
                       }}
                     >
-                      ðŸ—‘ï¸ Delete
+                      🗑️ Delete
                     </button>
                   </div>
                 </div>

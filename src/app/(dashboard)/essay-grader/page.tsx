@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import toast from "react-hot-toast";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
@@ -61,21 +61,21 @@ const TOOLS: {
 }[] = [
     {
       id: "grade",
-      icon: "ðŸ“",
+      icon: "📝",
       label: "Essay Grader",
       desc: "Multi-layer feedback: grammar, logic & rubric",
       color: "var(--brand-violet)",
     },
     {
       id: "detect",
-      icon: "ðŸ¤–",
+      icon: "📝",
       label: "AI Detector",
       desc: "Detect if text was written by AI",
       color: "var(--brand-cyan)",
     },
     {
       id: "humanize",
-      icon: "âœï¸",
+      icon: "📝",
       label: "AI Humanizer",
       desc: "Convert AI text to undetectable human writing",
       color: "#10b981",
@@ -85,16 +85,21 @@ const LAYER_INFO = [
   {
     key: "grammarFeedback",
     label: "Grammar & Style",
-    icon: "âœï¸",
+    icon: "📝",
     color: "var(--brand-cyan)",
   },
   {
     key: "argumentFeedback",
     label: "Logic & Argument",
-    icon: "ðŸ§ ",
+    icon: "🧠",
     color: "var(--brand-violet)",
   },
-  { key: "rubricFeedback", label: "Rubric Fit", icon: "ðŸ“‹", color: "#10b981" },
+  {
+    key: "rubricFeedback",
+    label: "Rubric Fit",
+    icon: "📋",
+    color: "#10b981",
+  },
 ];
 export default function EssayToolsPage() {
   const [activeTool, setActiveTool] = useState<Tool>("grade");
@@ -107,6 +112,14 @@ export default function EssayToolsPage() {
     null,
   );
   const [gradeLayer, setGradeLayer] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   useActivityTracker();
   const tool = TOOLS.find((t) => t.id === activeTool)!;
   const wordCount = text.split(/\s+/).filter(Boolean).length;
@@ -151,7 +164,7 @@ export default function EssayToolsPage() {
             marginBottom: 4,
           }}
         >
-          âœï¸ AI Writing Tools
+          ✍️ AI Writing Tools
         </h1>
         <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
           3 specialized agents: Grade essays, Detect AI content, Humanize AI
@@ -160,11 +173,11 @@ export default function EssayToolsPage() {
       </div>
       { }
       <div className="page-container" style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 10,
-          marginBottom: 18,
-        }}
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+        gap: 10,
+        marginBottom: 18,
+      }}
       >
         {TOOLS.map((t) => (
           <button
@@ -184,11 +197,11 @@ export default function EssayToolsPage() {
           >
             <div className="page-container" style={{ fontSize: 20, marginBottom: 4 }}>{t.icon}</div>
             <div className="page-container" style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: activeTool === t.id ? t.color : "var(--text-primary)",
-                marginBottom: 2,
-              }}
+              fontSize: 13,
+              fontWeight: 700,
+              color: activeTool === t.id ? t.color : "var(--text-primary)",
+              marginBottom: 2,
+            }}
             >
               {t.label}
             </div>
@@ -200,11 +213,11 @@ export default function EssayToolsPage() {
       </div>
       { }
       <div className="page-container" style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 16,
-          alignItems: "start",
-        }}
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+        gap: 16,
+        alignItems: "start",
+      }}
       >
         { }
         <div className="page-container" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -221,7 +234,7 @@ export default function EssayToolsPage() {
                   letterSpacing: "0.05em",
                 }}
               >
-                ðŸ“‹ Grading Rubric (optional)
+                📋 Grading Rubric (optional)
               </label>
               <textarea
                 className="input-field"
@@ -247,10 +260,10 @@ export default function EssayToolsPage() {
               }}
             >
               {activeTool === "grade"
-                ? "ðŸ“ Your Essay"
+                ? "📝 Your Essay"
                 : activeTool === "humanize"
-                  ? "ðŸ¤– AI Text to Humanize"
-                  : "ðŸ“„ Text to Analyze"}
+                  ? "🤖 AI Text to Humanize"
+                  : "📄 Text to Analyze"}
             </label>
             <textarea
               className="input-field"
@@ -268,13 +281,13 @@ export default function EssayToolsPage() {
             />
           </div>
           <div className="page-container" style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
           >
             <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-              {wordCount} words Â· {text.length} chars
+              {wordCount} words • {text.length} chars
             </span>
             <button
               onClick={handleRun}
@@ -283,7 +296,7 @@ export default function EssayToolsPage() {
               style={{ padding: "11px 28px", fontSize: 14 }}
             >
               {loading
-                ? `â³ ${activeTool === "humanize" ? "Humanizing + checking..." : "Processing..."}`
+                ? `⏳ ${activeTool === "humanize" ? "Humanizing + checking..." : "Processing..."}`
                 : `${tool.icon} Run ${tool.label}`}
             </button>
           </div>
@@ -305,10 +318,10 @@ export default function EssayToolsPage() {
                   style={{ padding: 24, textAlign: "center" }}
                 >
                   <div className="page-container" style={{
-                      fontSize: 60,
-                      fontWeight: 900,
-                      color: getScoreColor(gradeResult.score),
-                    }}
+                    fontSize: 60,
+                    fontWeight: 900,
+                    color: getScoreColor(gradeResult.score),
+                  }}
                   >
                     {gradeResult.score}
                   </div>
@@ -329,12 +342,12 @@ export default function EssayToolsPage() {
                   </div>
                 </div>
                 <div className="page-container" style={{
-                    display: "flex",
-                    gap: 6,
-                    background: "rgba(255,255,255,0.04)",
-                    padding: 4,
-                    borderRadius: 12,
-                  }}
+                  display: "flex",
+                  gap: 6,
+                  background: "rgba(255,255,255,0.04)",
+                  padding: 4,
+                  borderRadius: 12,
+                }}
                 >
                   {LAYER_INFO.map((l, i) => (
                     <button
@@ -378,20 +391,20 @@ export default function EssayToolsPage() {
                   </p>
                 </div>
                 <div className="page-container" style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 10,
-                  }}
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 10,
+                }}
                 >
                   <div className="glass-card" style={{ padding: 14 }}>
                     <div className="page-container" style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#10b981",
-                        marginBottom: 8,
-                      }}
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#10b981",
+                      marginBottom: 8,
+                    }}
                     >
-                      âœ… Strengths
+                      ✅ Strengths
                     </div>
                     {gradeResult.strengths.map((s, i) => (
                       <div
@@ -419,13 +432,13 @@ export default function EssayToolsPage() {
                   </div>
                   <div className="glass-card" style={{ padding: 14 }}>
                     <div className="page-container" style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#f59e0b",
-                        marginBottom: 8,
-                      }}
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#f59e0b",
+                      marginBottom: 8,
+                    }}
                     >
-                      ðŸ’¡ Improvements
+                      💡 Improvements
                     </div>
                     {gradeResult.improvements.map((s, i) => (
                       <div
@@ -445,7 +458,7 @@ export default function EssayToolsPage() {
                             color: "#f59e0b",
                           }}
                         >
-                          â€¢
+                          •
                         </span>
                         {s}
                       </div>
@@ -468,32 +481,32 @@ export default function EssayToolsPage() {
                   style={{ padding: 24, textAlign: "center" }}
                 >
                   <div className="page-container" style={{
-                      fontSize: 60,
-                      fontWeight: 900,
-                      color: getScoreColor(100 - detectResult.probability),
-                    }}
+                    fontSize: 60,
+                    fontWeight: 900,
+                    color: getScoreColor(100 - detectResult.probability),
+                  }}
                   >
                     {detectResult.probability}%
                   </div>
                   <div className="page-container" style={{
-                      fontSize: 12,
-                      color: "var(--text-muted)",
-                      marginBottom: 8,
-                    }}
+                    fontSize: 12,
+                    color: "var(--text-muted)",
+                    marginBottom: 8,
+                  }}
                   >
                     AI probability
                   </div>
                   <div className="page-container" style={{
-                      display: "inline-block",
-                      padding: "5px 16px",
-                      borderRadius: 99,
-                      background:
-                        getScoreColor(100 - detectResult.probability) + "22",
-                      color: getScoreColor(100 - detectResult.probability),
-                      fontWeight: 700,
-                      fontSize: 13,
-                      marginBottom: 4,
-                    }}
+                    display: "inline-block",
+                    padding: "5px 16px",
+                    borderRadius: 99,
+                    background:
+                      getScoreColor(100 - detectResult.probability) + "22",
+                    color: getScoreColor(100 - detectResult.probability),
+                    fontWeight: 700,
+                    fontSize: 13,
+                    marginBottom: 4,
+                  }}
                   >
                     {detectResult.verdict}
                   </div>
@@ -520,13 +533,13 @@ export default function EssayToolsPage() {
                 { }
                 <div className="glass-card" style={{ padding: 16 }}>
                   <div className="page-container" style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: "var(--text-secondary)",
-                      marginBottom: 8,
-                    }}
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: "var(--text-secondary)",
+                    marginBottom: 8,
+                  }}
                   >
-                    ðŸ“‹ Summary
+                    📋 Summary
                   </div>
                   <p
                     style={{
@@ -541,20 +554,20 @@ export default function EssayToolsPage() {
                 </div>
                 { }
                 <div className="page-container" style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 10,
-                  }}
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 10,
+                }}
                 >
                   <div className="glass-card" style={{ padding: 14 }}>
                     <div className="page-container" style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#10b981",
-                        marginBottom: 8,
-                      }}
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#10b981",
+                      marginBottom: 8,
+                    }}
                     >
-                      ðŸ§‘ Human Signals
+                      🧑 Human Signals
                     </div>
                     <p
                       style={{
@@ -569,13 +582,13 @@ export default function EssayToolsPage() {
                   </div>
                   <div className="glass-card" style={{ padding: 14 }}>
                     <div className="page-container" style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#f43f5e",
-                        marginBottom: 8,
-                      }}
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#f43f5e",
+                      marginBottom: 8,
+                    }}
                     >
-                      ðŸ¤– AI Signals
+                      🤖 AI Signals
                     </div>
                     <p
                       style={{
@@ -593,13 +606,13 @@ export default function EssayToolsPage() {
                 {detectResult.evidence.length > 0 && (
                   <div className="glass-card" style={{ padding: 14 }}>
                     <div className="page-container" style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "var(--brand-cyan)",
-                        marginBottom: 10,
-                      }}
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "var(--brand-cyan)",
+                      marginBottom: 10,
+                    }}
                     >
-                      ðŸ”¬ Specific Evidence
+                      🔬 Specific Evidence
                     </div>
                     {detectResult.evidence.map((e, i) => (
                       <div
@@ -651,10 +664,10 @@ export default function EssayToolsPage() {
                 >
                   <div className="page-container" style={{ textAlign: "center", flexShrink: 0 }}>
                     <div className="page-container" style={{
-                        fontSize: 42,
-                        fontWeight: 900,
-                        color: getHumanColor(humanizeResult.detectionScore),
-                      }}
+                      fontSize: 42,
+                      fontWeight: 900,
+                      color: getHumanColor(humanizeResult.detectionScore),
+                    }}
                     >
                       {humanizeResult.detectionScore}%
                     </div>
@@ -664,16 +677,16 @@ export default function EssayToolsPage() {
                   </div>
                   <div className="page-container" style={{ flex: 1 }}>
                     <div className="page-container" style={{
-                        display: "inline-block",
-                        padding: "4px 12px",
-                        borderRadius: 99,
-                        background:
-                          getHumanColor(humanizeResult.detectionScore) + "22",
-                        color: getHumanColor(humanizeResult.detectionScore),
-                        fontWeight: 700,
-                        fontSize: 12,
-                        marginBottom: 6,
-                      }}
+                      display: "inline-block",
+                      padding: "4px 12px",
+                      borderRadius: 99,
+                      background:
+                        getHumanColor(humanizeResult.detectionScore) + "22",
+                      color: getHumanColor(humanizeResult.detectionScore),
+                      fontWeight: 700,
+                      fontSize: 12,
+                      marginBottom: 6,
+                    }}
                     >
                       {humanizeResult.detectionVerdict}
                     </div>
@@ -693,10 +706,10 @@ export default function EssayToolsPage() {
                     {humanizeResult.remainingSignals &&
                       humanizeResult.remainingSignals !== "None detected" && (
                         <div className="page-container" style={{
-                            fontSize: 11,
-                            color: "var(--text-muted)",
-                            marginTop: 6,
-                          }}
+                          fontSize: 11,
+                          color: "var(--text-muted)",
+                          marginTop: 6,
+                        }}
                         >
                           âš ï¸ Remaining: {humanizeResult.remainingSignals}
                         </div>
@@ -704,15 +717,15 @@ export default function EssayToolsPage() {
                     {humanizeResult.remainingSignals === "None detected" && (
                       <div className="page-container" style={{ fontSize: 11, color: "#10b981", marginTop: 6 }}
                       >
-                        âœ… No remaining AI patterns detected
+                        ✅ No remaining AI patterns detected
                       </div>
                     )}
                     {humanizeResult.passesRun && (
                       <div className="page-container" style={{
-                          fontSize: 11,
-                          color: "var(--text-muted)",
-                          marginTop: 4,
-                        }}
+                        fontSize: 11,
+                        color: "var(--text-muted)",
+                        marginTop: 4,
+                      }}
                       >
                         {humanizeResult.passesRun}
                       </div>
@@ -721,15 +734,15 @@ export default function EssayToolsPage() {
                 </div>
                 { }
                 <div className="page-container" style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
                 >
                   <span
                     style={{ fontSize: 13, fontWeight: 700, color: "#10b981" }}
                   >
-                    âœ… Humanized Output
+                    ✅ Humanized Output
                   </span>
                   <button
                     onClick={() => {
@@ -747,7 +760,7 @@ export default function EssayToolsPage() {
                       fontFamily: "Inter",
                     }}
                   >
-                    ðŸ“‹ Copy
+                    📋 Copy
                   </button>
                 </div>
                 <div
@@ -770,7 +783,7 @@ export default function EssayToolsPage() {
                   onClick={() => {
                     setText(humanizeResult.humanized);
                     toast("Loaded into input â€” run AI Detector to verify", {
-                      icon: "ðŸ”„",
+                      icon: "📝",
                     });
                   }}
                   style={{
@@ -811,11 +824,11 @@ export default function EssayToolsPage() {
                     {tool.icon}
                   </div>
                   <div className="page-container" style={{
-                      fontSize: 15,
-                      fontWeight: 700,
-                      color: "var(--text-secondary)",
-                      marginBottom: 6,
-                    }}
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: "var(--text-secondary)",
+                    marginBottom: 6,
+                  }}
                   >
                     {tool.label}
                   </div>

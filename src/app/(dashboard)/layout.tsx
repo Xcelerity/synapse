@@ -1,18 +1,33 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
 import ThemeToggle from "@/components/ThemeToggle";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import toast from "react-hot-toast";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useAuthStore();
+  const { user, isLoading, setUser } = useAuthStore();
   const router = useRouter();
+
+  async function handleSignOut() {
+    try {
+      await signOut(auth);
+      setUser(null);
+      router.push("/login");
+      toast.success("Signed out");
+    } catch {
+      toast.error("Sign out failed");
+    }
+  }
+
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login");
@@ -57,7 +72,6 @@ export default function DashboardLayout({
         background: "var(--bg-primary)",
       }}
     >
-      {/* Sidebar — hidden on mobile via CSS */}
       <div className="sidebar-wrapper" style={{ flexShrink: 0 }}>
         <Sidebar />
       </div>
@@ -75,9 +89,9 @@ export default function DashboardLayout({
       >
         <header
           style={{
-            padding: "16px 24px",
+            padding: "12px 24px",
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             alignItems: "center",
             borderBottom: "1px solid var(--border-subtle)",
             background: "var(--bg-glass)",
@@ -88,12 +102,31 @@ export default function DashboardLayout({
             zIndex: 40,
           }}
         >
+          <button
+            onClick={handleSignOut}
+            className="header-signout-btn"
+            style={{
+              background: "rgba(244, 63, 94, 0.08)",
+              border: "1px solid rgba(244, 63, 94, 0.25)",
+              borderRadius: 10,
+              padding: "7px 14px",
+              color: "#f43f5e",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "Outfit, Inter, sans-serif",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            🚪 Sign Out
+          </button>
           <ThemeToggle />
         </header>
         <div style={{ flex: 1 }}>{children}</div>
       </main>
 
-      {/* Bottom nav — only shown on mobile via CSS */}
       <div className="bottom-nav-wrapper">
         <BottomNav />
       </div>

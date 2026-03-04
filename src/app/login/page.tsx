@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider } from '@/lib/firebase';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
 import toast from 'react-hot-toast';
 import ThreeBackground from '@/components/ThreeBackground';
 
@@ -80,6 +80,16 @@ export default function LoginPage() {
     const [mode, setMode] = useState<'login' | 'register'>('login');
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ name: '', email: '', password: '', gradeLevel: 'undergrad' });
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth <= 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     async function ensureProfile(uid: string, name: string, email: string) {
         const ref = doc(db, 'users', uid);
@@ -145,283 +155,582 @@ export default function LoginPage() {
     ];
 
     return (
-        <div className="login-split" style={{
-            minHeight: '100vh',
-            display: 'flex',
-            position: 'relative',
-            overflow: 'hidden',
-            background: 'rgba(5, 5, 20, 0.7)',
-            fontFamily: '"Outfit", "Inter", sans-serif'
-        }}>
-            <ThreeBackground />
+        <>
+            <div className="mobile-landing-page"
+                onScroll={(e) => setIsScrolled(e.currentTarget.scrollTop > 50)}
+                style={{
+                    display: 'none',
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(5, 5, 20, 0.7)',
+                    flexDirection: 'column',
+                    zIndex: 100,
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    fontFamily: '"Outfit", "Inter", sans-serif',
+                }}>
+                <ThreeBackground />
 
-            {/* Ambient Background Orbs */}
-            <div style={{
-                position: 'fixed', width: 1000, height: 1000, top: '-10%', left: '-10%',
-                background: 'radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%)',
-                zIndex: 1, pointerEvents: 'none'
-            }} />
-            <div style={{
-                position: 'fixed', width: 800, height: 800, bottom: '-5%', right: '-5%',
-                background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
-                zIndex: 1, pointerEvents: 'none'
-            }} />
+                {/* Ambient Background Orbs */}
+                <div style={{
+                    position: 'fixed', width: 1000, height: 1000, top: '-10%', left: '-10%',
+                    background: 'radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%)',
+                    zIndex: 1, pointerEvents: 'none'
+                }} />
+                <div style={{
+                    position: 'fixed', width: 800, height: 800, bottom: '-5%', right: '-5%',
+                    background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+                    zIndex: 1, pointerEvents: 'none'
+                }} />
 
-            <div className="login-features" style={{
-                flex: 1.2,
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-                overflowY: 'auto',
-                padding: '80px',
-                position: 'relative',
-                zIndex: 10,
-                scrollbarWidth: 'none',
-            }}>
-                <style dangerouslySetInnerHTML={{ __html: `div::-webkit-scrollbar { display: none; }` }} />
+                <div style={{
+                    position: 'sticky',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 200,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    background: 'rgba(5, 5, 20, 0.9)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <AnimatePresence>
+                            {(isScrolled || showAuthModal) && (
+                                <motion.div
+                                    initial={{ opacity: 0, width: 0, x: -20 }}
+                                    animate={{ opacity: 1, width: 'auto', x: 0 }}
+                                    exit={{ opacity: 0, width: 0, x: -20 }}
+                                    transition={{ duration: 0.2 }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden', whiteSpace: 'nowrap' }}
+                                >
+                                    <img src="/icon.png" alt="Synapse" style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 8, flexShrink: 0 }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontSize: 18, fontWeight: 900, background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.1 }}>Synapse</span>
+                                        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Best Friend</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <motion.button whileTap={{ scale: 0.93 }}
+                            onClick={() => { setMode('login'); setShowAuthModal(true); }}
+                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '8px 16px', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                        >Sign In</motion.button>
+                        <motion.button whileTap={{ scale: 0.93 }}
+                            onClick={() => { setMode('register'); setShowAuthModal(true); }}
+                            style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', border: 'none', borderRadius: 10, padding: '8px 16px', color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}
+                        >Sign Up</motion.button>
+                    </div>
+                </div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                >
+                {/* Scrollable Features Content */}
+                <div style={{ padding: '24px 20px 120px', position: 'relative', zIndex: 10 }}>
                     <motion.div
-                        whileHover={{ z: 50, scale: 1.05 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40, cursor: 'default', transformStyle: 'preserve-3d' }}
+                        animate={{ opacity: showAuthModal ? 0 : 1 }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}
                     >
-                        <div
-                            style={{
-                                width: 64,
-                                height: 64,
-                                background: '#0a0a0a',
-                                borderRadius: 20,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                transformStyle: 'preserve-3d'
-                            }}
-                        >
-                            <img src="/icon.png" alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain', transform: 'translateZ(20px)' }} />
+                        <div style={{ width: 48, height: 48, background: '#0a0a0a', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <img src="/icon.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
                         </div>
-                        <div style={{ transformStyle: 'preserve-3d' }}>
-                            <h2 style={{
-                                fontSize: 36,
-                                fontWeight: 950,
-                                margin: 0,
-                                letterSpacing: '-0.03em',
-                                background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                transform: 'translateZ(10px)'
-                            }}>Synapse</h2>
-                            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: 600, marginTop: -2, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Best Friend</p>
+                        <div>
+                            <h2 style={{ fontSize: 24, fontWeight: 950, margin: 0, background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Synapse</h2>
+                            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 600, margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Best Friend</p>
                         </div>
                     </motion.div>
 
-                    <h1 style={{
-                        fontSize: 72,
-                        fontWeight: 900,
-                        lineHeight: 1.1,
-                        marginBottom: 32,
-                        letterSpacing: '-0.05em',
-                        color: '#fff'
-                    }}>
+                    <h1 style={{ fontSize: 44, fontWeight: 900, lineHeight: 1.1, marginBottom: 20, letterSpacing: '-0.04em', color: '#fff' }}>
                         Master your crafts <br />
-                        <span style={{
-                            background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            display: 'inline-block'
-                        }}>without limits.</span>
+                        <span style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>without limits.</span>
                     </h1>
 
-                    <p style={{
-                        fontSize: 20,
-                        color: 'rgba(255,255,255,0.6)',
-                        lineHeight: 1.6,
-                        marginBottom: 64,
-                        maxWidth: 580,
-                        fontWeight: 400
-                    }}>
-                        Intelligent systems designed to support you as your best friend. From essay grading to real-time oral mastery, we equip you with everything needed for academic excellence.
+                    <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginBottom: 40 }}>
+                        Intelligent systems designed to support you as your best friend. From essay grading to real-time oral mastery.
                     </p>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingBottom: 120 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                         {FEATURES.map((item, i) => (
-                            <FeatureCard key={i} item={item} index={i} />
+                            <motion.div key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.04 }}
+                                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}
+                            >
+                                <span style={{ fontSize: 24 }}>{item.icon}</span>
+                                <h3 style={{ fontSize: 13, fontWeight: 800, color: '#fff', margin: 0 }}>{item.title}</h3>
+                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.5 }}>{item.desc}</p>
+                            </motion.div>
                         ))}
                     </div>
-                </motion.div>
+                </div>
             </div>
 
-            {/* Right Section: Auth Form */}
-            <div className="login-auth-panel" style={{
-                flex: 0.8,
+            {/* ============================================
+            DESKTOP LAYOUT (unchanged)
+        ============================================ */}
+            <div className="login-split" style={{
+                minHeight: '100vh',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '40px',
                 position: 'relative',
-                zIndex: 10,
-                borderLeft: '1px solid rgba(255, 255, 255, 0.05)'
+                overflow: 'hidden',
+                background: 'rgba(5, 5, 20, 0.7)',
+                fontFamily: '"Outfit", "Inter", sans-serif'
             }}>
-                <motion.div
-                    initial={{ opacity: 0, x: 50, rotateY: 20 }}
-                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                    whileHover={{ rotateY: -5, rotateX: 2, z: 20 }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                    style={{
-                        width: '100%',
-                        maxWidth: 440,
-                        background: 'rgba(10, 10, 20, 0.75)',
-                        backdropFilter: 'blur(50px)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: 40,
-                        padding: '56px 48px',
-                        boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 80px rgba(139, 92, 246, 0.1)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        transformStyle: 'preserve-3d',
-                        perspective: '1500px'
-                    }}
-                >
-                    <div style={{ textAlign: 'center', marginBottom: 32, transform: 'translateZ(30px)' }}>
-                        <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 12 }}>
-                            {mode === 'login' ? 'Welcome Back' : 'Get Started'}
-                        </h2>
-                        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
-                            {mode === 'login' ? 'Continue your journey with your best friend.' : 'Join the elite circle of learners today.'}
-                        </p>
-                    </div>
+                <ThreeBackground />
 
-                    <div style={{ display: 'flex', gap: 12, marginBottom: 32, transform: 'translateZ(20px)' }}>
-                        <button
-                            onClick={handleGoogleAuth}
-                            disabled={loading}
+                {/* Ambient Background Orbs */}
+                <div style={{
+                    position: 'fixed', width: 1000, height: 1000, top: '-10%', left: '-10%',
+                    background: 'radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%)',
+                    zIndex: 1, pointerEvents: 'none'
+                }} />
+                <div style={{
+                    position: 'fixed', width: 800, height: 800, bottom: '-5%', right: '-5%',
+                    background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+                    zIndex: 1, pointerEvents: 'none'
+                }} />
+
+                <div className="mobile-login-header" style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 200,
+                    display: isMobile ? 'flex' : 'none',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    background: 'rgba(5, 5, 20, 0.85)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <img src="/icon.png" alt="Synapse" style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 8 }} />
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: 18, fontWeight: 900, background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.1 }}>Synapse</span>
+                            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Best Friend</span>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <motion.button
+                            whileTap={{ scale: 0.93 }}
+                            onClick={() => { setMode('login'); setShowAuthModal(true); }}
                             style={{
-                                flex: 1,
-                                height: 56,
-                                borderRadius: 18,
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                background: 'rgba(255,255,255,0.07)',
+                                border: '1px solid rgba(255,255,255,0.15)',
+                                borderRadius: 10,
+                                padding: '8px 16px',
+                                color: '#fff',
+                                fontWeight: 700,
+                                fontSize: 13,
                                 cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: loading ? 0.6 : 1
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                        >Sign In</motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.93 }}
+                            onClick={() => { setMode('register'); setShowAuthModal(true); }}
+                            style={{
+                                background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+                                border: 'none',
+                                borderRadius: 10,
+                                padding: '8px 16px',
+                                color: '#fff',
+                                fontWeight: 800,
+                                fontSize: 13,
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 16px rgba(139, 92, 246, 0.4)',
+                            }}
+                        >Sign Up</motion.button>
+                    </div>
+                </div>
+
+                <div className="login-features" style={{
+                    flex: 1.2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100vh',
+                    overflowY: 'auto',
+                    padding: '80px',
+                    position: 'relative',
+                    zIndex: 10,
+                    scrollbarWidth: 'none',
+                }}>
+                    <style dangerouslySetInnerHTML={{ __html: `div::-webkit-scrollbar { display: none; }` }} />
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1, ease: 'easeOut' }}
+                    >
+                        <motion.div
+                            whileHover={{ z: 50, scale: 1.05 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                            style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40, cursor: 'default', transformStyle: 'preserve-3d' }}
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
-                            <span style={{ marginLeft: 12, fontWeight: 700, color: '#fff', fontSize: 14 }}>Google</span>
-                        </button>
-                    </div>
+                            <div
+                                style={{
+                                    width: 64,
+                                    height: 64,
+                                    background: '#0a0a0a',
+                                    borderRadius: 20,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                    transformStyle: 'preserve-3d'
+                                }}
+                            >
+                                <img src="/icon.png" alt="Logo" style={{ width: 40, height: 40, objectFit: 'contain', transform: 'translateZ(20px)' }} />
+                            </div>
+                            <div style={{ transformStyle: 'preserve-3d' }}>
+                                <h2 style={{
+                                    fontSize: 36,
+                                    fontWeight: 950,
+                                    margin: 0,
+                                    letterSpacing: '-0.03em',
+                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    transform: 'translateZ(10px)'
+                                }}>Synapse</h2>
+                                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: 600, marginTop: -2, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your Best Friend</p>
+                            </div>
+                        </motion.div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32, transform: 'translateZ(10px)' }}>
-                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Secure Email Access</span>
-                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
-                    </div>
+                        <h1 style={{
+                            fontSize: 72,
+                            fontWeight: 900,
+                            lineHeight: 1.1,
+                            marginBottom: 32,
+                            letterSpacing: '-0.05em',
+                            color: '#fff'
+                        }}>
+                            Master your crafts <br />
+                            <span style={{
+                                background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                display: 'inline-block'
+                            }}>without limits.</span>
+                        </h1>
 
-                    <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: 16, transform: 'translateZ(20px)' }}>
-                        {mode === 'register' && (
+                        <p style={{
+                            fontSize: 20,
+                            color: 'rgba(255,255,255,0.6)',
+                            lineHeight: 1.6,
+                            marginBottom: 64,
+                            maxWidth: 580,
+                            fontWeight: 400
+                        }}>
+                            Intelligent systems designed to support you as your best friend. From essay grading to real-time oral mastery, we equip you with everything needed for academic excellence.
+                        </p>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, paddingBottom: 120 }}>
+                            {FEATURES.map((item, i) => (
+                                <FeatureCard key={i} item={item} index={i} />
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+
+                <div className="login-auth-panel login-auth-desktop" style={{
+                    flex: 0.8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                    position: 'relative',
+                    zIndex: 10,
+                    borderLeft: '1px solid rgba(255, 255, 255, 0.05)'
+                }}>
+                    <motion.div
+                        initial={{ opacity: 0, x: 50, rotateY: 20 }}
+                        animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                        whileHover={{ rotateY: -5, rotateX: 2, z: 20 }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
+                        style={{
+                            width: '100%',
+                            maxWidth: 440,
+                            background: 'rgba(10, 10, 20, 0.75)',
+                            backdropFilter: 'blur(50px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: 40,
+                            padding: '56px 48px',
+                            boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 80px rgba(139, 92, 246, 0.1)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            transformStyle: 'preserve-3d',
+                            perspective: '1500px'
+                        }}
+                    >
+                        <div style={{ textAlign: 'center', marginBottom: 32, transform: 'translateZ(30px)' }}>
+                            <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 12 }}>
+                                {mode === 'login' ? 'Welcome Back' : 'Get Started'}
+                            </h2>
+                            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+                                {mode === 'login' ? 'Continue your journey with your best friend.' : 'Join the elite circle of learners today.'}
+                            </p>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 32, transform: 'translateZ(20px)' }}>
+                            <button
+                                onClick={handleGoogleAuth}
+                                disabled={loading}
+                                style={{
+                                    flex: 1,
+                                    height: 56,
+                                    borderRadius: 18,
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    opacity: loading ? 0.6 : 1
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
+                                <span style={{ marginLeft: 12, fontWeight: 700, color: '#fff', fontSize: 14 }}>Google</span>
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32, transform: 'translateZ(10px)' }}>
+                            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Secure Email Access</span>
+                            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+                        </div>
+
+                        <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: 16, transform: 'translateZ(20px)' }}>
+                            {mode === 'register' && (
+                                <input
+                                    placeholder="Full Name"
+                                    value={form.name}
+                                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                                    required
+                                    style={{ height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15 }}
+                                />
+                            )}
                             <input
-                                placeholder="Full Name"
-                                value={form.name}
-                                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                                type="email"
+                                placeholder="Email address"
+                                value={form.email}
+                                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                                 required
                                 style={{ height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15 }}
                             />
-                        )}
-                        <input
-                            type="email"
-                            placeholder="Email address"
-                            value={form.email}
-                            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                            required
-                            style={{ height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15 }}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={form.password}
-                            onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                            required
-                            minLength={6}
-                            style={{ height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15 }}
-                        />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={form.password}
+                                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                                required
+                                minLength={6}
+                                style={{ height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15 }}
+                            />
 
-                        {mode === 'register' && (
-                            <div style={{ position: 'relative' }}>
-                                <select
-                                    value={form.gradeLevel}
-                                    onChange={e => setForm(f => ({ ...f, gradeLevel: e.target.value as any }))}
-                                    style={{ width: '100%', height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15, appearance: 'none', cursor: 'pointer' }}
-                                >
-                                    <option value="k-3">Grade K–3 (Ages 5–8)</option>
-                                    <option value="k-6">Grade 4–6 (Ages 9–11)</option>
-                                    <option value="middle">Middle School (Ages 12–14)</option>
-                                    <option value="high">High School (Ages 15–18)</option>
-                                    <option value="undergrad">Undergraduate</option>
-                                    <option value="grad">Graduate / Master's</option>
-                                    <option value="phd">PhD / Researcher</option>
-                                </select>
-                            </div>
-                        )}
+                            {mode === 'register' && (
+                                <div style={{ position: 'relative' }}>
+                                    <select
+                                        value={form.gradeLevel}
+                                        onChange={e => setForm(f => ({ ...f, gradeLevel: e.target.value as any }))}
+                                        style={{ width: '100%', height: 56, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 20px', fontSize: 15, appearance: 'none', cursor: 'pointer' }}
+                                    >
+                                        <option value="k-3">Grade K–3 (Ages 5–8)</option>
+                                        <option value="k-6">Grade 4–6 (Ages 9–11)</option>
+                                        <option value="middle">Middle School (Ages 12–14)</option>
+                                        <option value="high">High School (Ages 15–18)</option>
+                                        <option value="undergrad">Undergraduate</option>
+                                        <option value="grad">Graduate / Master's</option>
+                                        <option value="phd">PhD / Researcher</option>
+                                    </select>
+                                </div>
+                            )}
 
-                        <motion.button
-                            type="submit"
-                            disabled={loading}
-                            whileHover={{ y: -4, scale: 1.02, boxShadow: '0 20px 60px rgba(139, 92, 246, 0.4)' }}
-                            whileTap={{ y: 0, scale: 0.98 }}
-                            style={{
-                                height: 56,
-                                borderRadius: 18,
-                                background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-                                border: 'none',
-                                color: '#fff',
-                                fontSize: 16,
-                                fontWeight: 900,
-                                cursor: 'pointer',
-                                marginTop: 8,
-                                transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-                                boxShadow: '0 10px 40px rgba(139, 92, 246, 0.3)',
-                                opacity: loading ? 0.7 : 1,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em'
-                            }}
-                        >
-                            {loading ? 'Thinking...' : mode === 'login' ? 'Sign In' : 'Create Account'}
-                        </motion.button>
-                    </form>
-
-                    <div style={{ textAlign: 'center', marginTop: 32, transform: 'translateZ(10px)' }}>
-                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
-                            {mode === 'login' ? "New to Synapse?" : "Already member?"}
-                            <button
-                                onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                            <motion.button
+                                type="submit"
+                                disabled={loading}
+                                whileHover={{ y: -4, scale: 1.02, boxShadow: '0 20px 60px rgba(139, 92, 246, 0.4)' }}
+                                whileTap={{ y: 0, scale: 0.98 }}
                                 style={{
-                                    background: 'none',
+                                    height: 56,
+                                    borderRadius: 18,
+                                    background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
                                     border: 'none',
-                                    color: '#06b6d4',
-                                    fontWeight: 800,
-                                    marginLeft: 8,
+                                    color: '#fff',
+                                    fontSize: 16,
+                                    fontWeight: 900,
                                     cursor: 'pointer',
-                                    textDecoration: 'underline',
-                                    textUnderlineOffset: '4px'
+                                    marginTop: 8,
+                                    transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+                                    boxShadow: '0 10px 40px rgba(139, 92, 246, 0.3)',
+                                    opacity: loading ? 0.7 : 1,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em'
                                 }}
                             >
-                                {mode === 'login' ? 'Create Account' : 'Log In'}
-                            </button>
-                        </p>
-                    </div>
-                </motion.div>
+                                {loading ? 'Thinking...' : mode === 'login' ? 'Sign In' : 'Create Account'}
+                            </motion.button>
+                        </form>
+
+                        <div style={{ textAlign: 'center', marginTop: 32, transform: 'translateZ(10px)' }}>
+                            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
+                                {mode === 'login' ? "New to Synapse?" : "Already member?"}
+                                <button
+                                    onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: '#06b6d4',
+                                        fontWeight: 800,
+                                        marginLeft: 8,
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline',
+                                        textUnderlineOffset: '4px'
+                                    }}
+                                >
+                                    {mode === 'login' ? 'Create Account' : 'Log In'}
+                                </button>
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
-        </div>
+
+            <AnimatePresence>
+                {showAuthModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowAuthModal(false)}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            background: 'rgba(0,0,0,0.7)',
+                            zIndex: 300,
+                            display: 'flex',
+                            alignItems: 'flex-end',
+                        }}
+                        className="mobile-auth-overlay"
+                    >
+                        <motion.div
+                            initial={{ y: '100%' }}
+                            animate={{ y: 0 }}
+                            exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                                width: '100%',
+                                background: 'rgba(8, 8, 20, 0.98)',
+                                backdropFilter: 'blur(40px)',
+                                borderRadius: '32px 32px 0 0',
+                                padding: '28px 28px 48px',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderBottom: 'none',
+                                maxHeight: '92vh',
+                                overflowY: 'auto',
+                            }}
+                        >
+                            {/* Handle */}
+                            <div style={{ width: 44, height: 5, borderRadius: 99, background: 'rgba(255,255,255,0.2)', margin: '0 auto 28px' }} />
+                            {/* MODE TOGGLE */}
+                            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: 5, marginBottom: 28, gap: 6 }}>
+                                {(['login', 'register'] as const).map(m => (
+                                    <button key={m} onClick={() => setMode(m)} style={{
+                                        flex: 1, padding: '10px', borderRadius: 12, border: 'none',
+                                        background: mode === m ? 'linear-gradient(135deg, #8b5cf6, #06b6d4)' : 'transparent',
+                                        color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s',
+                                    }}>{m === 'login' ? 'Log In' : 'Sign Up'}</button>
+                                ))}
+                            </div>
+
+                            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                                <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', marginBottom: 8 }}>
+                                    {mode === 'login' ? 'Welcome Back' : 'Get Started'}
+                                </h2>
+                                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>
+                                    {mode === 'login' ? 'Continue your journey.' : 'Join Synapse today.'}
+                                </p>
+                            </div>
+
+                            {/* Google */}
+                            <button
+                                onClick={handleGoogleAuth}
+                                disabled={loading}
+                                style={{
+                                    width: '100%', height: 52, borderRadius: 16,
+                                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    marginBottom: 20, gap: 12, color: '#fff', fontSize: 15, fontWeight: 700,
+                                    opacity: loading ? 0.6 : 1,
+                                }}
+                            >
+                                <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
+                                Continue with Google
+                            </button>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+                                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>or email</span>
+                                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+                            </div>
+
+                            <form onSubmit={handleEmailAuth} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                {mode === 'register' && (
+                                    <input placeholder="Full Name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required
+                                        style={{ height: 52, borderRadius: 14, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 18px', fontSize: 15, outline: 'none' }} />
+                                )}
+                                <input type="email" placeholder="Email address" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required
+                                    style={{ height: 52, borderRadius: 14, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 18px', fontSize: 15, outline: 'none' }} />
+                                <input type="password" placeholder="Password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} required minLength={6}
+                                    style={{ height: 52, borderRadius: 14, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 18px', fontSize: 15, outline: 'none' }} />
+                                {mode === 'register' && (
+                                    <select value={form.gradeLevel} onChange={e => setForm(f => ({ ...f, gradeLevel: e.target.value as any }))}
+                                        style={{ height: 52, borderRadius: 14, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '0 18px', fontSize: 15, outline: 'none', cursor: 'pointer' }}>
+                                        <option value="k-3" style={{ background: '#0a0a14' }}>Grade K–3</option>
+                                        <option value="k-6" style={{ background: '#0a0a14' }}>Grade 4–6</option>
+                                        <option value="middle" style={{ background: '#0a0a14' }}>Middle School</option>
+                                        <option value="high" style={{ background: '#0a0a14' }}>High School</option>
+                                        <option value="undergrad" style={{ background: '#0a0a14' }}>Undergraduate</option>
+                                        <option value="grad" style={{ background: '#0a0a14' }}>Graduate</option>
+                                        <option value="phd" style={{ background: '#0a0a14' }}>PhD / Researcher</option>
+                                    </select>
+                                )}
+                                <motion.button type="submit" disabled={loading}
+                                    whileTap={{ scale: 0.97 }}
+                                    style={{
+                                        height: 52, borderRadius: 16,
+                                        background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
+                                        border: 'none', color: '#fff', fontSize: 16, fontWeight: 900,
+                                        cursor: 'pointer', marginTop: 8, boxShadow: '0 10px 40px rgba(139, 92, 246, 0.3)',
+                                        opacity: loading ? 0.7 : 1,
+                                    }}
+                                >
+                                    {loading ? 'Thinking...' : mode === 'login' ? 'Sign In' : 'Create Account'}
+                                </motion.button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <style>{`
+                @media (max-width: 768px) {
+                    .mobile-landing-page { display: flex !important; }
+                    .login-split { display: none !important; }
+                    .mobile-auth-overlay { display: flex !important; }
+                }
+            `}</style>
+        </>
     );
 }

@@ -7,8 +7,17 @@ import {
   getArchetypes,
 } from "@/lib/gamification";
 import { motion } from "motion/react";
+import { useState, useEffect } from "react";
 export default function SkillTreePage() {
   const { gamification } = useAuthStore();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const { level, percent } = getXPProgress(gamification.xp);
   const levelInfo = getLevelTitle(level);
   return (
@@ -20,7 +29,9 @@ export default function SkillTreePage() {
           marginBottom: 32,
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: isMobile ? "flex-start" : "center",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 16 : 0,
         }}
       >
         <div>
@@ -32,7 +43,7 @@ export default function SkillTreePage() {
               marginBottom: 8,
             }}
           >
-            ðŸŒŸ Mastery Archetypes
+            🌟 Mastery Archetypes
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: 15 }}>
             Your action-based learning profile. Progress through different study
@@ -40,15 +51,15 @@ export default function SkillTreePage() {
           </p>
         </div>
         <div className="page-container" style={{
-            textAlign: "right",
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            background: "var(--bg-card)",
-            padding: "12px 24px",
-            borderRadius: 16,
-            border: "1px solid var(--border-subtle)",
-          }}
+          textAlign: "right",
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          background: "var(--bg-card)",
+          padding: "12px 24px",
+          borderRadius: 16,
+          border: "1px solid var(--border-subtle)",
+        }}
         >
           <div>
             <div className="page-container" style={{ fontSize: 24, fontWeight: 900, color: levelInfo.color }}
@@ -56,12 +67,12 @@ export default function SkillTreePage() {
               Lv. {level}
             </div>
             <div className="page-container" style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: 1,
-              }}
+              fontSize: 12,
+              fontWeight: 700,
+              color: "var(--text-muted)",
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
             >
               {levelInfo.title}
             </div>
@@ -70,25 +81,25 @@ export default function SkillTreePage() {
           />
           <div>
             <div className="page-container" style={{
-                fontSize: 20,
-                fontWeight: 800,
-                color: "var(--brand-amber)",
-              }}
+              fontSize: 20,
+              fontWeight: 800,
+              color: "var(--brand-amber)",
+            }}
             >
               {gamification.xp.toLocaleString()}
             </div>
             <div className="page-container" style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: "var(--text-muted)",
-              }}
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--text-muted)",
+            }}
             >
               TOTAL XP
             </div>
           </div>
         </div>
       </motion.div>
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -102,10 +113,10 @@ export default function SkillTreePage() {
         }}
       >
         <div className="page-container" style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 8,
+        }}
         >
           <span
             style={{
@@ -123,11 +134,11 @@ export default function SkillTreePage() {
           </span>
         </div>
         <div className="page-container" style={{
-            background: "rgba(255,255,255,0.05)",
-            borderRadius: 99,
-            height: 12,
-            overflow: "hidden",
-          }}
+          background: "rgba(255,255,255,0.05)",
+          borderRadius: 99,
+          height: 12,
+          overflow: "hidden",
+        }}
         >
           <motion.div
             initial={{ width: 0 }}
@@ -141,13 +152,13 @@ export default function SkillTreePage() {
           />
         </div>
       </motion.div>
-      {}
+      { }
       <div className="page-container" style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 16,
-          marginBottom: 48,
-        }}
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)",
+        gap: 16,
+        marginBottom: 48,
+      }}
       >
         {getArchetypes(gamification).map((archetype, i) => (
           <motion.div
@@ -159,27 +170,27 @@ export default function SkillTreePage() {
             style={{ padding: 24, borderTop: `3px solid ${archetype.color}` }}
           >
             <div className="page-container" style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                marginBottom: 16,
-              }}
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 16,
+            }}
             >
               <div className="page-container" style={{
-                  fontSize: 40,
-                  filter: `drop-shadow(0 0 12px ${archetype.color}40)`,
-                }}
+                fontSize: 40,
+                filter: `drop-shadow(0 0 12px ${archetype.color}40)`,
+              }}
               >
                 {archetype.icon}
               </div>
               <div className="page-container" style={{
-                  background: `${archetype.color}15`,
-                  color: archetype.color,
-                  padding: "4px 12px",
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: 900,
-                }}
+                background: `${archetype.color}15`,
+                color: archetype.color,
+                padding: "4px 12px",
+                borderRadius: 12,
+                fontSize: 14,
+                fontWeight: 900,
+              }}
               >
                 Lv. {archetype.level}
               </div>
@@ -206,10 +217,10 @@ export default function SkillTreePage() {
               {archetype.description}
             </p>
             <div className="page-container" style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 8,
-              }}
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
             >
               <span
                 style={{
@@ -231,11 +242,11 @@ export default function SkillTreePage() {
               </span>
             </div>
             <div className="page-container" style={{
-                background: "rgba(255,255,255,0.05)",
-                borderRadius: 6,
-                height: 8,
-                overflow: "hidden",
-              }}
+              background: "rgba(255,255,255,0.05)",
+              borderRadius: 6,
+              height: 8,
+              overflow: "hidden",
+            }}
             >
               <motion.div
                 initial={{ width: 0 }}
@@ -251,7 +262,7 @@ export default function SkillTreePage() {
           </motion.div>
         ))}
       </div>
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -265,11 +276,13 @@ export default function SkillTreePage() {
         }}
       >
         <div className="page-container" style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: 32,
-          }}
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: isMobile ? "flex-start" : "flex-end",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 16 : 0,
+          marginBottom: 32,
+        }}
         >
           <div>
             <h2
@@ -280,7 +293,7 @@ export default function SkillTreePage() {
                 marginBottom: 6,
               }}
             >
-              ðŸ† The Trophy Room
+              🏆 The Trophy Room
             </h2>
             <p style={{ fontSize: 14, color: "var(--text-muted)" }}>
               Collect iconic badges by mastering your study workflow and hitting
@@ -288,22 +301,22 @@ export default function SkillTreePage() {
             </p>
           </div>
           <div className="page-container" style={{
-              fontSize: 16,
-              fontWeight: 800,
-              color: "var(--brand-rose)",
-              background: "rgba(244, 63, 94, 0.1)",
-              padding: "6px 16px",
-              borderRadius: "12px",
-            }}
+            fontSize: 16,
+            fontWeight: 800,
+            color: "var(--brand-rose)",
+            background: "rgba(244, 63, 94, 0.1)",
+            padding: "6px 16px",
+            borderRadius: "12px",
+          }}
           >
             {gamification.badges.length} / {Object.keys(BADGES).length} Unlocked
           </div>
         </div>
         <div className="page-container" style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-            gap: 20,
-          }}
+          display: "grid",
+          gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(150px, 1fr))",
+          gap: isMobile ? 12 : 20,
+        }}
         >
           {Object.values(BADGES).map((badge) => {
             const isUnlocked = gamification.badges.includes(badge.id);
@@ -334,22 +347,22 @@ export default function SkillTreePage() {
                 title={badge.description}
               >
                 <div className="page-container" style={{
-                    fontSize: 42,
-                    filter: isUnlocked
-                      ? `drop-shadow(0 0 16px ${badge.color}80)`
-                      : "none",
-                    marginBottom: 4,
-                  }}
+                  fontSize: 42,
+                  filter: isUnlocked
+                    ? `drop-shadow(0 0 16px ${badge.color}80)`
+                    : "none",
+                  marginBottom: 4,
+                }}
                 >
                   {badge.icon}
                 </div>
                 <div className="page-container" style={{
-                    fontSize: 14,
-                    fontWeight: 900,
-                    color: isUnlocked ? badge.color : "var(--text-muted)",
-                    textAlign: "center",
-                    lineHeight: 1.2,
-                  }}
+                  fontSize: 14,
+                  fontWeight: 900,
+                  color: isUnlocked ? badge.color : "var(--text-muted)",
+                  textAlign: "center",
+                  lineHeight: 1.2,
+                }}
                 >
                   {badge.name}
                 </div>
@@ -362,12 +375,12 @@ export default function SkillTreePage() {
                   </div>
                 ) : (
                   <div className="page-container" style={{
-                      fontSize: 11,
-                      fontWeight: 800,
-                      color: "var(--text-muted)",
-                      letterSpacing: 0.5,
-                      textTransform: "uppercase",
-                    }}
+                    fontSize: 11,
+                    fontWeight: 800,
+                    color: "var(--text-muted)",
+                    letterSpacing: 0.5,
+                    textTransform: "uppercase",
+                  }}
                   >
                     Locked
                   </div>

@@ -70,7 +70,20 @@ export default function NotesPage() {
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   useActivityTracker();
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      setShowSidebar(!mobile);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -119,6 +132,7 @@ export default function NotesPage() {
     setAiResult("");
     setShowAiPanel(false);
     setEditingTitle(false);
+    if (isMobile) setShowSidebar(false);
   }
   async function createNote() {
     if (!user) return;
@@ -237,144 +251,176 @@ export default function NotesPage() {
     n.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   return (
-    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      { }
-      <div
-        className="page-split-sidebar"
-        style={{
-          width: 280,
-          flexShrink: 0,
-          borderRight: "1px solid var(--border-subtle)",
-          display: "flex",
-          flexDirection: "column",
-          background: "var(--bg-secondary)",
-        }}
-      >
-        <div
-          style={{
-            padding: "20px 16px",
-            borderBottom: "1px solid var(--border-subtle)",
-          }}
-        >
-          <div
+    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
+      {/* Mobile Overlay Background */}
+      <AnimatePresence>
+        {isMobile && showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setShowSidebar(false)}
             style={{
+              position: isMobile ? "fixed" : "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 9998,
+              backdropFilter: "blur(2px)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {(!isMobile || showSidebar) && (
+          <motion.div
+            initial={isMobile ? { x: "-100%" } : false}
+            animate={{ x: 0 }}
+            exit={isMobile ? { x: "-100%" } : undefined}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="page-split-sidebar"
+            style={{
+              width: isMobile ? "85%" : 280,
+              maxWidth: 320,
+              flexShrink: 0,
+              borderRight: "1px solid var(--border-subtle)",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 12,
+              flexDirection: "column",
+              background: "var(--bg-secondary)",
+              position: isMobile ? "fixed" : "relative",
+              zIndex: 9999,
+              top: isMobile ? 0 : undefined,
+              bottom: isMobile ? 0 : undefined,
+              height: isMobile ? "100vh" : "100%",
+              boxShadow: isMobile ? "4px 0 24px rgba(0,0,0,0.5)" : "none",
             }}
           >
-            <h2
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: "var(--text-primary)",
-              }}
-            >
-              📝 Notes ({notes.length})
-            </h2>
-            <button
-              onClick={createNote}
-              className="btn-primary"
-              style={{ padding: "6px 14px", fontSize: 12 }}
-            >
-              + New
-            </button>
-          </div>
-          <input
-            className="input-field"
-            placeholder="Search notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ fontSize: 13 }}
-          />
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
-          {!mounted ? (
-            [1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="shimmer"
-                style={{ height: 64, borderRadius: 10, marginBottom: 8 }}
-              />
-            ))
-          ) : filteredNotes.length === 0 ? (
             <div
               style={{
-                textAlign: "center",
-                padding: "48px 16px",
-                color: "var(--text-muted)",
+                padding: "20px 16px",
+                borderBottom: "1px solid var(--border-subtle)",
               }}
             >
-              <div style={{ fontSize: 32, marginBottom: 8 }}>📝</div>
-              <p style={{ fontSize: 13 }}>No notes yet. Click + New!</p>
-            </div>
-          ) : (
-            filteredNotes.map((note) => (
-              <motion.div
-                key={note.id}
-                whileHover={{ x: 2 }}
-                onClick={() => openNote(note)}
+              <div
                 style={{
-                  padding: "12px 14px",
-                  borderRadius: 10,
-                  marginBottom: 6,
-                  cursor: "pointer",
-                  position: "relative",
-                  border: `1px solid ${selectedId === note.id ? "rgba(124,58,237,0.4)" : "transparent"}`,
-                  background:
-                    selectedId === note.id
-                      ? "rgba(124,58,237,0.08)"
-                      : "rgba(255,255,255,0.02)",
-                  transition: "all 0.2s",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 12,
                 }}
               >
+                <h2
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  📝 Notes ({notes.length})
+                </h2>
+                <button
+                  onClick={createNote}
+                  className="btn-primary"
+                  style={{ padding: "6px 14px", fontSize: 12 }}
+                >
+                  + New
+                </button>
+              </div>
+              <input
+                className="input-field"
+                placeholder="Search notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ fontSize: 13 }}
+              />
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
+              {!mounted ? (
+                [1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="shimmer"
+                    style={{ height: 64, borderRadius: 10, marginBottom: 8 }}
+                  />
+                ))
+              ) : filteredNotes.length === 0 ? (
                 <div
                   style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: 4,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {note.title || "Untitled"}
-                </div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                  {new Date(note.updatedAt).toLocaleDateString()} ·{" "}
-                  {note.wordCount || 0} words
-                </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteNote(note.id);
-                  }}
-                  style={{
-                    position: "absolute",
-                    right: 8,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: 14,
+                    textAlign: "center",
+                    padding: "48px 16px",
                     color: "var(--text-muted)",
-                    opacity: 0,
-                    transition: "opacity 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
                 >
-                  🗑
-                </button>
-              </motion.div>
-            ))
-          )}
-        </div>
-      </div>
-      { }
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>📝</div>
+                  <p style={{ fontSize: 13 }}>No notes yet. Click + New!</p>
+                </div>
+              ) : (
+                filteredNotes.map((note) => (
+                  <motion.div
+                    key={note.id}
+                    whileHover={{ x: 2 }}
+                    onClick={() => openNote(note)}
+                    style={{
+                      padding: "12px 14px",
+                      borderRadius: 10,
+                      marginBottom: 6,
+                      cursor: "pointer",
+                      position: "relative",
+                      border: `1px solid ${selectedId === note.id ? "rgba(124,58,237,0.4)" : "transparent"}`,
+                      background:
+                        selectedId === note.id
+                          ? "rgba(124,58,237,0.08)"
+                          : "rgba(255,255,255,0.02)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "var(--text-primary)",
+                        marginBottom: 4,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {note.title || "Untitled"}
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                      {new Date(note.updatedAt).toLocaleDateString()} ·{" "}
+                      {note.wordCount || 0} words
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNote(note.id);
+                      }}
+                      style={{
+                        position: "absolute",
+                        right: 8,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: 14,
+                        color: "var(--text-muted)",
+                        opacity: 0,
+                        transition: "opacity 0.2s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                    >
+                      🗑
+                    </button>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div
         className="page-split-main"
         style={{
@@ -389,11 +435,31 @@ export default function NotesPage() {
             { }
             <div
               style={{
-                padding: "16px 32px",
+                padding: "16px 24px",
                 borderBottom: "1px solid var(--border-subtle)",
                 background: "var(--bg-secondary)",
+                display: "flex",
+                alignItems: "center",
+                gap: 16
               }}
             >
+              {isMobile && (
+                <button
+                  onClick={() => setShowSidebar(true)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-primary)",
+                    fontSize: 24,
+                    cursor: "pointer",
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  ☰
+                </button>
+              )}
               {editingTitle ? (
                 <input
                   autoFocus
@@ -664,8 +730,32 @@ export default function NotesPage() {
               flexDirection: "column",
               gap: 16,
               color: "var(--text-muted)",
+              position: "relative"
             }}
           >
+            {isMobile && (
+              <button
+                onClick={() => setShowSidebar(true)}
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  left: 20,
+                  background: "var(--bg-card)",
+                  border: "1px solid var(--border-subtle)",
+                  color: "var(--text-primary)",
+                  fontSize: 20,
+                  cursor: "pointer",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontWeight: 600
+                }}
+              >
+                ☰ Notes
+              </button>
+            )}
             <div style={{ fontSize: 64 }}>📝</div>
             <div
               style={{

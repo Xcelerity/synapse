@@ -195,6 +195,7 @@ export default function StudyBuddyPage() {
           display: "flex",
           alignItems: "center",
           gap: 16,
+          flexWrap: "wrap",
         }}
       >
         <h1
@@ -210,7 +211,7 @@ export default function StudyBuddyPage() {
           3 AI personas debate your ideas: Devil&apos;s Advocate, Fact Checker,
           and Synthesizer
         </p>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {PERSONAS.map((p) => (
             <div
               key={p.id}
