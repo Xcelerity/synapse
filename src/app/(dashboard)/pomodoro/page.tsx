@@ -136,8 +136,8 @@ export default function PomodoroPage() {
   const strokeDashoffset = circumference * (1 - progress);
   const modeInfo = MODES[mode];
   return (
-    <div style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
-      {}
+    <div className="page-split" style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
+      { }
       <div
         style={{
           flex: 1,
@@ -168,7 +168,7 @@ export default function PomodoroPage() {
             sessions today
           </p>
         </motion.div>
-        {}
+        { }
         <div
           style={{
             display: "flex",
@@ -203,7 +203,7 @@ export default function PomodoroPage() {
             </button>
           ))}
         </div>
-        {}
+        { }
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -211,7 +211,7 @@ export default function PomodoroPage() {
           style={{ position: "relative", marginBottom: 48 }}
         >
           <svg width={size} height={size} className="pomodoro-ring">
-            {}
+            { }
             <circle
               cx={size / 2}
               cy={size / 2}
@@ -220,7 +220,7 @@ export default function PomodoroPage() {
               stroke="rgba(255,255,255,0.06)"
               strokeWidth={strokeWidth}
             />
-            {}
+            { }
             <circle
               cx={size / 2}
               cy={size / 2}
@@ -239,7 +239,7 @@ export default function PomodoroPage() {
               }}
             />
           </svg>
-          {}
+          { }
           <div
             style={{
               position: "absolute",
@@ -269,7 +269,7 @@ export default function PomodoroPage() {
             </div>
           </div>
         </motion.div>
-        {}
+        { }
         <div style={{ display: "flex", gap: 12, marginBottom: 32 }}>
           <button
             onClick={reset}
@@ -303,7 +303,7 @@ export default function PomodoroPage() {
             {isRunning ? "⏸ Pause" : "▶ Start"}
           </motion.button>
         </div>
-        {}
+        { }
         <button
           onClick={() => setShowCustom((s) => !s)}
           className="btn-ghost"
@@ -344,7 +344,7 @@ export default function PomodoroPage() {
             </motion.div>
           )}
         </AnimatePresence>
-        {}
+        { }
         <div style={{ marginTop: 20, display: "flex", gap: 8 }}>
           {Array.from({ length: Math.max(4, sessionsCompleted + 1) }).map(
             (_, i) => (
@@ -374,8 +374,9 @@ export default function PomodoroPage() {
           </span>
         </div>
       </div>
-      {}
+      { }
       <div
+        className="page-split-sidebar"
         style={{
           width: 320,
           padding: 32,
@@ -460,7 +461,7 @@ export default function PomodoroPage() {
             );
           })}
         </div>
-        {}
+        { }
         {musicTrack !== "off" && (
           <div
             style={{

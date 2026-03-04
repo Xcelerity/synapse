@@ -121,9 +121,10 @@ export default function AiTutorPage() {
   }
   const persona = AI_PERSONAS.find((p) => p.id === selectedPersona)!;
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       { }
       <div
+        className="page-split-sidebar"
         style={{
           width: 280,
           flexShrink: 0,
@@ -131,6 +132,7 @@ export default function AiTutorPage() {
           background: "var(--bg-secondary)",
           display: "flex",
           flexDirection: "column",
+          overflowY: "auto",
         }}
       >
         <div
@@ -272,7 +274,7 @@ export default function AiTutorPage() {
         </div>
       </div>
       { }
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div className="page-split-main" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         { }
         <div
           style={{

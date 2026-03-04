@@ -321,7 +321,7 @@ export default function FlashcardsPage() {
         }).length;
     };
     return (
-        <div style={{ padding: '32px 40px', maxWidth: 1200 }}>
+        <div className="page-container" style={{ padding: '32px 40px', maxWidth: 1200 }}>
             <AnimatePresence mode="wait">
                 { }
                 {mode === 'list' && (

@@ -194,7 +194,7 @@ export default function NotesPage() {
           { title, updatedAt },
           { merge: true },
         );
-      } catch (e) {}
+      } catch (e) { }
     }
   }
   async function handleAI(action: "summarize" | "flashcards" | "eli5") {
@@ -237,9 +237,10 @@ export default function NotesPage() {
     n.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      {}
+    <div className="page-split" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      { }
       <div
+        className="page-split-sidebar"
         style={{
           width: 280,
           flexShrink: 0,
@@ -373,8 +374,9 @@ export default function NotesPage() {
           )}
         </div>
       </div>
-      {}
+      { }
       <div
+        className="page-split-main"
         style={{
           flex: 1,
           display: "flex",
@@ -384,7 +386,7 @@ export default function NotesPage() {
       >
         {selectedNote ? (
           <>
-            {}
+            { }
             <div
               style={{
                 padding: "16px 32px",
@@ -447,7 +449,7 @@ export default function NotesPage() {
                 </div>
               )}
             </div>
-            {}
+            { }
             <div
               style={{
                 padding: "10px 24px",

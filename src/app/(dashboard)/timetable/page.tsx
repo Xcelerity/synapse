@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   collection,
@@ -256,7 +256,7 @@ export default function TimetablePage() {
       second: "2-digit",
     });
     setEditFormData({
-      title: event.title.replace(" ✅", ""),
+      title: event.title.replace(" âœ…", ""),
       color: event.extendedProps.originalColor || event.backgroundColor,
       start: startStr,
       end: endStr,
@@ -301,7 +301,7 @@ export default function TimetablePage() {
   }
   const calendarEvents = blocks.map((b) => ({
     id: b.id,
-    title: b.title + (b.completed ? " ✅" : ""),
+    title: b.title + (b.completed ? " âœ…" : ""),
     start: b.start,
     end: b.end,
     backgroundColor: b.completed ? "var(--bg-secondary)" : b.color,
@@ -314,8 +314,7 @@ export default function TimetablePage() {
       ? (blocks.filter((b) => b.completed).length / blocks.length) * 100
       : 0;
   return (
-    <div
-      style={{
+    <div className="page-container" style={{
         padding: "32px 40px",
         display: "flex",
         gap: 32,
@@ -325,8 +324,7 @@ export default function TimetablePage() {
       }}
     >
       { }
-      <div
-        style={{
+      <div className="page-container" style={{
           width: 340,
           flexShrink: 0,
           display: "flex",
@@ -360,7 +358,7 @@ export default function TimetablePage() {
             Drag tasks directly onto the grid, or click and highlight a
             timeframe to auto-create blocks.
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="page-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <label
               style={{
                 fontSize: 12,
@@ -385,8 +383,7 @@ export default function TimetablePage() {
         </motion.div>
         { }
         <div className="glass-card" style={{ padding: 20 }}>
-          <div
-            style={{
+          <div className="page-container" style={{
               display: "flex",
               justifyContent: "space-between",
               marginBottom: 8,
@@ -422,8 +419,7 @@ export default function TimetablePage() {
             flexDirection: "column",
           }}
         >
-          <div
-            style={{
+          <div className="page-container" style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -500,7 +496,7 @@ export default function TimetablePage() {
                   }}
                   title="Remove from Bank"
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
             ))}
@@ -537,7 +533,7 @@ export default function TimetablePage() {
               }
               style={{ padding: "10px 14px", fontSize: 13 }}
             />
-            <div style={{ display: "flex", gap: 12 }}>
+            <div className="page-container" style={{ display: "flex", gap: 12 }}>
               <input
                 required
                 type="date"
@@ -565,8 +561,8 @@ export default function TimetablePage() {
                 }}
               />
             </div>
-            <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1 }}>
+            <div className="page-container" style={{ display: "flex", gap: 12 }}>
+              <div className="page-container" style={{ flex: 1 }}>
                 <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
                   Start
                 </label>
@@ -585,7 +581,7 @@ export default function TimetablePage() {
                   style={{ padding: "8px 10px", fontSize: 12, width: "100%" }}
                 />
               </div>
-              <div style={{ flex: 1 }}>
+              <div className="page-container" style={{ flex: 1 }}>
                 <label style={{ fontSize: 10, color: "var(--text-muted)" }}>
                   End
                 </label>
@@ -610,8 +606,7 @@ export default function TimetablePage() {
               + Add to Grid
             </button>
           </form>
-          <div
-            style={{
+          <div className="page-container" style={{
               marginTop: 24,
               paddingTop: 16,
               borderTop: "1px solid var(--border-subtle)",
@@ -627,8 +622,7 @@ export default function TimetablePage() {
             >
               Routines
             </h3>
-            <div
-              style={{
+            <div className="page-container" style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 8,
@@ -639,7 +633,7 @@ export default function TimetablePage() {
                 onClick={() => toast.success("Weekend routine loaded!")}
                 style={{ fontSize: 12 }}
               >
-                🏖️ Weekend
+                ðŸ–ï¸ Weekend
               </button>
               <button
                 className="btn-secondary"
@@ -648,7 +642,7 @@ export default function TimetablePage() {
                 }
                 style={{ fontSize: 12 }}
               >
-                💾 Save
+                ðŸ’¾ Save
               </button>
             </div>
           </div>
@@ -682,7 +676,7 @@ export default function TimetablePage() {
           }}
         />
         {calendarPlugins.length > 0 ? (
-          <div style={{ flex: 1, minHeight: 0 }}>
+          <div className="page-container" style={{ flex: 1, minHeight: 0 }}>
             <FullCalendar
               {...({ ref: calendarRef } as any)}
               plugins={calendarPlugins}
@@ -711,8 +705,7 @@ export default function TimetablePage() {
             />
           </div>
         ) : (
-          <div
-            style={{
+          <div className="page-container" style={{
               flex: 1,
               display: "flex",
               alignItems: "center",
@@ -763,8 +756,7 @@ export default function TimetablePage() {
               }}
             >
               {isEditingEvent ? (
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                <div className="page-container" style={{ display: "flex", flexDirection: "column", gap: 16 }}
                 >
                   <h2
                     style={{
@@ -798,8 +790,8 @@ export default function TimetablePage() {
                       }
                     />
                   </div>
-                  <div style={{ display: "flex", gap: 16 }}>
-                    <div style={{ flex: 1 }}>
+                  <div className="page-container" style={{ display: "flex", gap: 16 }}>
+                    <div className="page-container" style={{ flex: 1 }}>
                       <label
                         style={{
                           fontSize: 12,
@@ -823,7 +815,7 @@ export default function TimetablePage() {
                         }
                       />
                     </div>
-                    <div style={{ flex: 1 }}>
+                    <div className="page-container" style={{ flex: 1 }}>
                       <label
                         style={{
                           fontSize: 12,
@@ -859,7 +851,7 @@ export default function TimetablePage() {
                     >
                       Color
                     </label>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div className="page-container" style={{ display: "flex", gap: 8 }}>
                       {[
                         "var(--brand-violet)",
                         "#f43f5e",
@@ -913,7 +905,7 @@ export default function TimetablePage() {
                       />
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                  <div className="page-container" style={{ display: "flex", gap: 12, marginTop: 16 }}>
                     <button
                       onClick={saveEventEdit}
                       className="btn-primary"
@@ -932,16 +924,14 @@ export default function TimetablePage() {
                 </div>
               ) : (
                 <div>
-                  <div
-                    style={{
+                  <div className="page-container" style={{
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "flex-start",
                     }}
                   >
                     <div>
-                      <div
-                        style={{
+                      <div className="page-container" style={{
                           display: "inline-block",
                           padding: "4px 12px",
                           background: selectedEvent.extendedProps.originalColor,
@@ -961,10 +951,9 @@ export default function TimetablePage() {
                           color: "var(--text-primary)",
                         }}
                       >
-                        {selectedEvent.title.replace(" ✅", "")}
+                        {selectedEvent.title.replace(" âœ…", "")}
                       </h2>
-                      <div
-                        style={{
+                      <div className="page-container" style={{
                           fontSize: 14,
                           color: "var(--text-muted)",
                           marginTop: 4,
@@ -994,10 +983,10 @@ export default function TimetablePage() {
                         fontWeight: 600,
                       }}
                     >
-                      ✏️ Edit
+                      âœï¸ Edit
                     </button>
                   </div>
-                  <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
+                  <div className="page-container" style={{ display: "flex", gap: 12, marginTop: 32 }}>
                     {!selectedEvent.extendedProps.completed && (
                       <button
                         onClick={markCompleted}
@@ -1008,7 +997,7 @@ export default function TimetablePage() {
                           background: "var(--brand-emerald)",
                         }}
                       >
-                        ✓ Mark Completed
+                        âœ“ Mark Completed
                       </button>
                     )}
                     <button
@@ -1021,7 +1010,7 @@ export default function TimetablePage() {
                         color: "#f43f5e",
                       }}
                     >
-                      🗑️ Delete
+                      ðŸ—‘ï¸ Delete
                     </button>
                   </div>
                 </div>
@@ -1033,3 +1022,4 @@ export default function TimetablePage() {
     </div>
   );
 }
+

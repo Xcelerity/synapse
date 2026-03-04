@@ -145,7 +145,7 @@ export default function LoginPage() {
     ];
 
     return (
-        <div style={{
+        <div className="login-split" style={{
             minHeight: '100vh',
             display: 'flex',
             position: 'relative',
@@ -167,8 +167,7 @@ export default function LoginPage() {
                 zIndex: 1, pointerEvents: 'none'
             }} />
 
-            {/* Left Section: Branding & Features (Scrollable) */}
-            <div style={{
+            <div className="login-features" style={{
                 flex: 1.2,
                 display: 'flex',
                 flexDirection: 'column',
@@ -259,7 +258,7 @@ export default function LoginPage() {
             </div>
 
             {/* Right Section: Auth Form */}
-            <div style={{
+            <div className="login-auth-panel" style={{
                 flex: 0.8,
                 display: 'flex',
                 alignItems: 'center',

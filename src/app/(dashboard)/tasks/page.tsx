@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback } from "react";
 import {
   collection,
@@ -99,7 +99,7 @@ export default function TasksPage() {
         category: "assignment",
       });
       setShowForm(false);
-      toast.success("📅 Task added!");
+      toast.success("ðŸ“… Task added!");
     } catch {
       toast.error("Failed to add task");
     }
@@ -133,9 +133,8 @@ export default function TasksPage() {
     borderColor: t.color,
   }));
   return (
-    <div style={{ padding: "32px 40px" }}>
-      <div
-        style={{
+    <div className="page-container" style={{ padding: "32px 40px" }}>
+      <div className="page-container" style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -151,15 +150,14 @@ export default function TasksPage() {
               marginBottom: 4,
             }}
           >
-            📅 Tasks & Calendar
+            ðŸ“… Tasks & Calendar
           </h1>
           <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
-            {pending.length} pending · {done.length} completed
+            {pending.length} pending Â· {done.length} completed
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <div
-            style={{
+        <div className="page-container" style={{ display: "flex", gap: 10 }}>
+          <div className="page-container" style={{
               display: "flex",
               background: "rgba(255,255,255,0.04)",
               borderRadius: 10,
@@ -185,7 +183,7 @@ export default function TasksPage() {
                   transition: "all 0.2s",
                 }}
               >
-                {v === "list" ? "📋 List" : "📅 Calendar"}
+                {v === "list" ? "ðŸ“‹ List" : "ðŸ“… Calendar"}
               </button>
             ))}
           </div>
@@ -205,8 +203,7 @@ export default function TasksPage() {
           className="glass-card"
           style={{ padding: 24, marginBottom: 24 }}
         >
-          <div
-            style={{
+          <div className="page-container" style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr auto",
               gap: 12,
@@ -240,15 +237,14 @@ export default function TasksPage() {
                 }))
               }
             >
-              <option value="assignment">📝 Assignment</option>
-              <option value="exam">📋 Exam</option>
-              <option value="class">🏫 Class</option>
-              <option value="study">📚 Study</option>
-              <option value="other">📌 Other</option>
+              <option value="assignment">ðŸ“ Assignment</option>
+              <option value="exam">ðŸ“‹ Exam</option>
+              <option value="class">ðŸ« Class</option>
+              <option value="study">ðŸ“š Study</option>
+              <option value="other">ðŸ“Œ Other</option>
             </select>
           </div>
-          <div
-            style={{
+          <div className="page-container" style={{
               display: "grid",
               gridTemplateColumns: "1fr auto auto",
               gap: 12,
@@ -272,9 +268,9 @@ export default function TasksPage() {
                 }))
               }
             >
-              <option value="low">🟢 Low</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="high">🔴 High</option>
+              <option value="low">ðŸŸ¢ Low</option>
+              <option value="medium">ðŸŸ¡ Medium</option>
+              <option value="high">ðŸ”´ High</option>
             </select>
             <button onClick={addTask} className="btn-primary">
               Add Task
@@ -297,8 +293,7 @@ export default function TasksPage() {
               height={600}
             />
           ) : (
-            <div
-              style={{
+            <div className="page-container" style={{
                 height: 400,
                 display: "flex",
                 alignItems: "center",
@@ -311,12 +306,11 @@ export default function TasksPage() {
           )}
         </div>
       ) : (
-        <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}
+        <div className="page-container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}
         >
           {[
-            { title: "📋 Pending", items: pending },
-            { title: "✅ Completed", items: done },
+            { title: "ðŸ“‹ Pending", items: pending },
+            { title: "âœ… Completed", items: done },
           ].map((section) => (
             <div key={section.title}>
               <h2
@@ -338,8 +332,7 @@ export default function TasksPage() {
                   />
                 ))
               ) : section.items.length === 0 ? (
-                <div
-                  style={{
+                <div className="page-container" style={{
                     color: "var(--text-muted)",
                     fontSize: 13,
                     padding: "24px 0",
@@ -363,8 +356,7 @@ export default function TasksPage() {
                       borderLeft: `3px solid ${task.color}`,
                     }}
                   >
-                    <div
-                      style={{
+                    <div className="page-container" style={{
                         display: "flex",
                         alignItems: "flex-start",
                         gap: 12,
@@ -382,9 +374,8 @@ export default function TasksPage() {
                           height: 16,
                         }}
                       />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div
-                          style={{
+                      <div className="page-container" style={{ flex: 1, minWidth: 0 }}>
+                        <div className="page-container" style={{
                             fontSize: 14,
                             fontWeight: 600,
                             color: task.completed
@@ -398,8 +389,7 @@ export default function TasksPage() {
                           {task.title}
                         </div>
                         {task.description && (
-                          <div
-                            style={{
+                          <div className="page-container" style={{
                               fontSize: 12,
                               color: "var(--text-muted)",
                               marginTop: 2,
@@ -408,8 +398,7 @@ export default function TasksPage() {
                             {task.description}
                           </div>
                         )}
-                        <div
-                          style={{
+                        <div className="page-container" style={{
                             display: "flex",
                             gap: 8,
                             marginTop: 6,
@@ -423,7 +412,7 @@ export default function TasksPage() {
                                 color: "var(--text-muted)",
                               }}
                             >
-                              📅 {new Date(task.dueDate).toLocaleDateString()}
+                              ðŸ“… {new Date(task.dueDate).toLocaleDateString()}
                             </span>
                           )}
                           <span
@@ -452,7 +441,7 @@ export default function TasksPage() {
                           opacity: 0.6,
                         }}
                       >
-                        🗑
+                        ðŸ—‘
                       </button>
                     </div>
                   </motion.div>
@@ -465,3 +454,4 @@ export default function TasksPage() {
     </div>
   );
 }
+

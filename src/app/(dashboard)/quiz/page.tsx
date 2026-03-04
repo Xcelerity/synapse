@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { generateAdvancedQuiz, gradeAnswer, AdvancedQuestion, GradeResult, QuestionType, DifficultyLevel, QuizConfig } from '@/lib/ai';
 import { useAuthStore } from '@/store/authStore';
@@ -16,12 +16,12 @@ const LANGUAGES = [
     'Danish', 'Finnish', 'Greek', 'Czech', 'Romanian', 'Ukrainian', 'Vietnamese',
 ];
 const QUESTION_TYPE_META: Record<QuestionType, { label: string; icon: string; color: string }> = {
-    mcq: { label: 'Multiple Choice', icon: '🔘', color: 'var(--brand-violet)' },
-    truefalse: { label: 'True / False', icon: '⚖️', color: '#0891b2' },
-    numerical: { label: 'Numerical', icon: '🔢', color: '#059669' },
-    descriptive: { label: 'Descriptive', icon: '📝', color: '#d97706' },
-    fillintheblank: { label: 'Fill-in-the-Blank', icon: '✍️', color: '#ec4899' },
-    matching: { label: 'Matching Pairs', icon: '🔗', color: '#8b5cf6' },
+    mcq: { label: 'Multiple Choice', icon: 'ðŸ”˜', color: 'var(--brand-violet)' },
+    truefalse: { label: 'True / False', icon: 'âš–ï¸', color: '#0891b2' },
+    numerical: { label: 'Numerical', icon: 'ðŸ”¢', color: '#059669' },
+    descriptive: { label: 'Descriptive', icon: 'ðŸ“', color: '#d97706' },
+    fillintheblank: { label: 'Fill-in-the-Blank', icon: 'âœï¸', color: '#ec4899' },
+    matching: { label: 'Matching Pairs', icon: 'ðŸ”—', color: '#8b5cf6' },
 };
 type QuizPhase = 'setup' | 'quiz' | 'results';
 type InputTab = 'text' | 'image' | 'pdf' | 'docx';
@@ -221,7 +221,7 @@ export default function QuizPage() {
         } else if (q.type === 'truefalse') {
             ans = `Answer: ${q.answer ? 'True' : 'False'}`;
         } else if (q.type === 'numerical') {
-            ans = `Answer: ${q.numericalAnswer} (±${q.tolerance})`;
+            ans = `Answer: ${q.numericalAnswer} (Â±${q.tolerance})`;
         } else if (q.type === 'descriptive') {
             ans = `Model Answer:\n${q.idealAnswer || q.explanation}`;
         } else if (q.type === 'fillintheblank') {
@@ -244,7 +244,7 @@ export default function QuizPage() {
                     userId: user.uid, name: 'Exported from Quizzes', description: 'Cards saved directly from Quiz results', cards: [card], createdAt: serverTimestamp()
                 });
             }
-            toast.success('Saved as Flashcard!', { id: q.id, icon: '🃏' });
+            toast.success('Saved as Flashcard!', { id: q.id, icon: 'ðŸƒ' });
         } catch (e: any) {
             toast.error('Failed to export', { id: q.id });
         }
@@ -335,20 +335,20 @@ export default function QuizPage() {
     const timerPct = timerEnabled && timerSeconds > 0 ? (timeLeft / timerSeconds) * 100 : 100;
     const timerColor = timerPct > 50 ? '#10b981' : timerPct > 25 ? '#f59e0b' : '#f43f5e';
     return (
-        <div style={{ padding: '16px 24px', minHeight: '100vh' }}>
+        <div className="page-container" style={{ padding: '16px 24px', minHeight: '100vh' }}>
             <AnimatePresence mode="wait">
                 { }
                 {phase === 'setup' && (
                     <motion.div key="setup" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                        <div style={{ marginBottom: 20 }}>
-                            <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 4 }}>✏️Quiz Generator</h1>
+                        <div className="page-container" style={{ marginBottom: 20 }}>
+                            <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 4 }}>âœï¸Quiz Generator</h1>
                             <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Quiz yourself, learn and enjoy!</p>
                         </div>
                         { }
-                        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
+                        <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
                             { }
                             <div className="glass-card" style={{ padding: 18 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                                     <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Question Types</h3>
                                     <span style={{ fontSize: 11, color: 'var(--brand-violet-light)', fontWeight: 700 }}>{totalQ} total</span>
                                 </div>
@@ -360,9 +360,9 @@ export default function QuizPage() {
                                             <span style={{ fontSize: 12, color: count > 0 ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
                                                 {meta.icon} {meta.label}
                                             </span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            <div className="page-container" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                                                 <button onClick={() => setCounts(c => ({ ...c, [type]: Math.max(0, (c[type] ?? 0) - 1) }))}
-                                                    style={{ width: 22, height: 22, borderRadius: 6, border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'Inter', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
+                                                    style={{ width: 22, height: 22, borderRadius: 6, border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'Inter', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>âˆ’</button>
                                                 <span style={{ fontSize: 14, fontWeight: 700, color: count > 0 ? meta.color : 'var(--text-muted)', minWidth: 18, textAlign: 'center' }}>{count}</span>
                                                 <button onClick={() => setCounts(c => ({ ...c, [type]: (c[type] ?? 0) + 1 }))}
                                                     style={{ width: 22, height: 22, borderRadius: 6, border: '1px solid var(--border-subtle)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'Inter', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
@@ -381,10 +381,10 @@ export default function QuizPage() {
                             { }
                             <div className="glass-card" style={{ padding: 18 }}>
                                 <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Difficulty</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                                <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                                     {(['easy', 'medium', 'hard', 'adaptive'] as DifficultyLevel[]).map((d: DifficultyLevel) => {
                                         const colors: Record<DifficultyLevel, string> = { easy: '#10b981', medium: '#f59e0b', hard: '#f43f5e', adaptive: 'var(--brand-violet)' };
-                                        const icons: Record<DifficultyLevel, string> = { easy: '🌱', medium: '⚡', hard: '🔥', adaptive: '🧠' };
+                                        const icons: Record<DifficultyLevel, string> = { easy: 'ðŸŒ±', medium: 'âš¡', hard: 'ðŸ”¥', adaptive: 'ðŸ§ ' };
                                         return (
                                             <button key={d} onClick={() => setDifficulty(d)} style={{
                                                 padding: '7px 6px', borderRadius: 9, border: `1px solid ${difficulty === d ? colors[d] + '80' : 'var(--border-subtle)'}`,
@@ -401,26 +401,26 @@ export default function QuizPage() {
                             { }
                             <div className="glass-card" style={{ padding: 18 }}>
                                 <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Options</h3>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>⏱️ Timer</span>
+                                <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>â±ï¸ Timer</span>
                                     <button onClick={() => setTimerEnabled(t => !t)} style={{ width: 36, height: 20, borderRadius: 99, border: 'none', cursor: 'pointer', background: timerEnabled ? 'var(--brand-violet)' : 'rgba(255,255,255,0.12)', position: 'relative', transition: 'background 0.2s' }}>
-                                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: timerEnabled ? 19 : 3, transition: 'left 0.2s' }} />
+                                        <div className="page-container" style={{ width: 14, height: 14, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: timerEnabled ? 19 : 3, transition: 'left 0.2s' }} />
                                     </button>
                                 </div>
                                 {timerEnabled && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                                    <div className="page-container" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                                         <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>Secs/Q:</span>
                                         <input type="number" min={5} max={600} value={timerSeconds} onChange={e => setTimerSeconds(Math.max(5, Number(e.target.value)))}
                                             className="input-field" style={{ flex: 1, textAlign: 'center', fontSize: 13, padding: '5px 8px' }} />
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>💡 Hints</span>
+                                <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>ðŸ’¡ Hints</span>
                                     <button onClick={() => setHintsEnabled(h => !h)} style={{ width: 36, height: 20, borderRadius: 99, border: 'none', cursor: 'pointer', background: hintsEnabled ? 'var(--brand-violet)' : 'rgba(255,255,255,0.12)', position: 'relative', transition: 'background 0.2s' }}>
-                                        <div style={{ width: 14, height: 14, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: hintsEnabled ? 19 : 3, transition: 'left 0.2s' }} />
+                                        <div className="page-container" style={{ width: 14, height: 14, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: hintsEnabled ? 19 : 3, transition: 'left 0.2s' }} />
                                     </button>
                                 </div>
-                                <div style={{ marginTop: 14 }}>
+                                <div className="page-container" style={{ marginTop: 14 }}>
                                     <h3 style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pedagogy</h3>
                                     <select value={framework} onChange={e => setFramework(e.target.value)} className="input-field" style={{ fontSize: 12, width: '100%', color: 'var(--text-primary)', background: 'var(--bg-secondary, #1e1e2e)', padding: '6px 8px' }}>
                                         <option value="None">None</option>
@@ -437,9 +437,9 @@ export default function QuizPage() {
                         <div className="glass-card" style={{ padding: 22 }}>
                             <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Content Source</h3>
                             { }
-                            <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+                            <div className="page-container" style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
                                 {(['text', 'image', 'pdf', 'docx'] as InputTab[]).map((tab: InputTab) => {
-                                    const icons: Record<InputTab, string> = { text: '✍️', image: '🖼️', pdf: '📄', docx: '📝' };
+                                    const icons: Record<InputTab, string> = { text: 'âœï¸', image: 'ðŸ–¼ï¸', pdf: 'ðŸ“„', docx: 'ðŸ“' };
                                     const labels: Record<InputTab, string> = { text: 'Text', image: 'Image', pdf: 'PDF', docx: 'Word' };
                                     return (
                                         <button key={tab} onClick={() => setInputTab(tab)} style={{
@@ -455,9 +455,9 @@ export default function QuizPage() {
                                 })}
                             </div>
                             {inputTab === 'text' ? (
-                                <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 12 }}>
+                                <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 12 }}>
                                     <input className="input-field" placeholder="Topic (e.g. 'Photosynthesis')" value={topic} onChange={e => setTopic(e.target.value)} style={{ fontSize: 14, alignSelf: 'start' }} />
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <div className="page-container" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                         <textarea className="input-field" placeholder="Paste your study material, lecture notes, or any text... (or use voice dictation)" value={content} onChange={e => setContent(e.target.value)} rows={10} style={{ resize: 'vertical', minHeight: 180 }} />
                                         <VoiceDictationButton onResult={(text: string) => setContent(prev => prev ? prev + ' ' + text : text)} />
                                     </div>
@@ -475,15 +475,15 @@ export default function QuizPage() {
                                         if (file) handleFileUpload(file, inputTab);
                                     }}>
                                         <input type="file" accept={inputTab === 'image' ? 'image/*' : inputTab === 'pdf' ? '.pdf' : '.docx'} onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileUpload(file, inputTab); }} style={{ display: 'none' }} />
-                                        <div style={{ fontSize: 40, marginBottom: 12 }}>{inputTab === 'image' ? '🖼️' : inputTab === 'pdf' ? '📄' : '📝'}</div>
-                                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+                                        <div className="page-container" style={{ fontSize: 40, marginBottom: 12 }}>{inputTab === 'image' ? 'ðŸ–¼ï¸' : inputTab === 'pdf' ? 'ðŸ“„' : 'ðŸ“'}</div>
+                                        <div className="page-container" style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
                                             {inputTab === 'image' ? 'Upload Image' : inputTab === 'pdf' ? 'Upload PDF' : 'Upload Word Doc'}
                                         </div>
                                         <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>Drag and drop or click to browse</p>
                                     </label>
                                     <button onClick={handleGenerate} disabled={generating || totalQ === 0} className="btn-primary"
                                         style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: 15, fontWeight: 700, marginTop: 14 }}>
-                                        {generating ? '⏳ Synthesizing quiz...' : `🚀 Auto-Synthesize ${totalQ}-Question Quiz`}
+                                        {generating ? 'â³ Synthesizing quiz...' : `ðŸš€ Auto-Synthesize ${totalQ}-Question Quiz`}
                                     </button>
                                 </>
                             )}
@@ -494,50 +494,50 @@ export default function QuizPage() {
                 {phase === 'quiz' && currentQuestion && (
                     <motion.div key={`q-${currentQ}`} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
                         { }
-                        <div style={{ marginBottom: 20 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div className="page-container" style={{ marginBottom: 20 }}>
+                            <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <div className="page-container" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                     <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Q {currentQ + 1} / {questions.length}</span>
                                     <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 99, background: QUESTION_TYPE_META[currentQuestion.type].color + '20', color: QUESTION_TYPE_META[currentQuestion.type].color, fontWeight: 700 }}>
                                         {QUESTION_TYPE_META[currentQuestion.type].icon} {QUESTION_TYPE_META[currentQuestion.type].label}
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                <div className="page-container" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                                     <span style={{ fontSize: 13, color: 'var(--brand-violet-light)', fontWeight: 600 }}>
                                         {totalEarned} / {totalPossible} pts
                                     </span>
                                     {timerEnabled && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: timerColor }}>
-                                            ⏱️ {timeLeft}s
+                                        <div className="page-container" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: timerColor }}>
+                                            â±ï¸ {timeLeft}s
                                         </div>
                                     )}
                                 </div>
                             </div>
                             { }
-                            <div style={{ position: 'relative', height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.07)' }}>
-                                <div style={{ position: 'absolute', height: '100%', borderRadius: 99, background: 'var(--brand-violet)', width: `${((currentQ) / questions.length) * 100}%`, transition: 'width 0.4s' }} />
+                            <div className="page-container" style={{ position: 'relative', height: 6, borderRadius: 99, background: 'rgba(255,255,255,0.07)' }}>
+                                <div className="page-container" style={{ position: 'absolute', height: '100%', borderRadius: 99, background: 'var(--brand-violet)', width: `${((currentQ) / questions.length) * 100}%`, transition: 'width 0.4s' }} />
                             </div>
                             { }
                             {timerEnabled && (
-                                <div style={{ marginTop: 4, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.05)' }}>
-                                    <div style={{ height: '100%', borderRadius: 99, background: timerColor, width: `${timerPct}%`, transition: 'width 1s linear, background 0.5s' }} />
+                                <div className="page-container" style={{ marginTop: 4, height: 3, borderRadius: 99, background: 'rgba(255,255,255,0.05)' }}>
+                                    <div className="page-container" style={{ height: '100%', borderRadius: 99, background: timerColor, width: `${timerPct}%`, transition: 'width 1s linear, background 0.5s' }} />
                                 </div>
                             )}
                         </div>
                         { }
                         <div className="glass-card" style={{ padding: '28px 32px', marginBottom: 16 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                            <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                                 <h2 style={{ fontSize: 19, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5, flex: 1 }}>
                                     {currentQuestion.question}
                                 </h2>
                                 <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 16, flexShrink: 0, marginTop: 4 }}>{currentQuestion.points} pts</span>
                             </div>
                             {hintsEnabled && currentQuestion.hint && !currentState?.answered && (
-                                <div style={{ marginTop: 8 }}>
+                                <div className="page-container" style={{ marginTop: 8 }}>
                                     {!showHint ? (
-                                        <button onClick={() => setShowHint(true)} style={{ fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>💡 Show hint</button>
+                                        <button onClick={() => setShowHint(true)} style={{ fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>ðŸ’¡ Show hint</button>
                                     ) : (
-                                        <div style={{ fontSize: 13, color: '#f59e0b', marginTop: 4, padding: '8px 12px', background: 'rgba(245,158,11,0.08)', borderRadius: 8, borderLeft: '3px solid #f59e0b' }}>
+                                        <div className="page-container" style={{ fontSize: 13, color: '#f59e0b', marginTop: 4, padding: '8px 12px', background: 'rgba(245,158,11,0.08)', borderRadius: 8, borderLeft: '3px solid #f59e0b' }}>
                                             Hint: {currentQuestion.hint}
                                         </div>
                                     )}
@@ -546,7 +546,7 @@ export default function QuizPage() {
                         </div>
                         { }
                         {currentQuestion.type === 'mcq' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div className="page-container" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                 {currentQuestion.options?.map((opt: string, i: number) => {
                                     const answered = currentState?.answered;
                                     const isSelected = mcqSelected === i;
@@ -561,7 +561,7 @@ export default function QuizPage() {
                                                 disabled={!!answered}
                                                 style={{ width: '100%', textAlign: 'left', padding: '15px 20px', background: bg, border: `1px solid ${border}`, borderRadius: 14, color, fontSize: 15, fontFamily: 'Inter', cursor: answered ? 'default' : 'pointer', transition: 'all 0.3s', display: 'flex', alignItems: 'center', gap: 12 }}>
                                                 <span style={{ width: 28, height: 28, borderRadius: '50%', background: answered && isCorrect ? '#10b981' : answered && isSelected ? '#f43f5e' : 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: answered ? 'white' : 'var(--text-secondary)', flexShrink: 0, transition: 'all 0.3s' }}>
-                                                    {answered && isCorrect ? '✓' : answered && isSelected && !isCorrect ? '✗' : String.fromCharCode(65 + i)}
+                                                    {answered && isCorrect ? 'âœ“' : answered && isSelected && !isCorrect ? 'âœ—' : String.fromCharCode(65 + i)}
                                                 </span>
                                                 {opt}
                                             </button>
@@ -571,7 +571,7 @@ export default function QuizPage() {
                             </div>
                         )}
                         {currentQuestion.type === 'truefalse' && (
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                                 {[true, false].map((val: boolean) => {
                                     const answered = currentState?.answered;
                                     const isSelected = tfSelected === val;
@@ -585,7 +585,7 @@ export default function QuizPage() {
                                                 onClick={() => { if (!answered) { setTfSelected(val); submitAnswer(val); } }}
                                                 disabled={!!answered}
                                                 style={{ width: '100%', padding: '28px 20px', textAlign: 'center', background: bg, border: `1px solid ${border}`, borderRadius: 18, color, fontSize: 20, fontWeight: 900, cursor: answered ? 'default' : 'pointer', transition: 'all 0.3s', fontFamily: 'Inter' }}>
-                                                {val ? '✅ TRUE' : '❌ FALSE'}
+                                                {val ? 'âœ… TRUE' : 'âŒ FALSE'}
                                             </button>
                                         </motion.div>
                                     );
@@ -594,7 +594,7 @@ export default function QuizPage() {
                         )}
                         {currentQuestion.type === 'numerical' && (
                             <div>
-                                <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+                                <div className="page-container" style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
                                     <input type="number" className="input-field" placeholder="Enter your numeric answer..." value={numInput} onChange={e => setNumInput(e.target.value)}
                                         disabled={currentState?.answered} onKeyDown={e => { if (e.key === 'Enter' && numInput.trim() && !currentState?.answered) submitAnswer(Number(numInput)); }}
                                         style={{ flex: 1, fontSize: 18, fontWeight: 700, textAlign: 'center' }} />
@@ -604,7 +604,7 @@ export default function QuizPage() {
                                     </button>
                                 </div>
                                 {currentQuestion.tolerance !== undefined && (
-                                    <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>Tolerance: ±{currentQuestion.tolerance}</p>
+                                    <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center' }}>Tolerance: Â±{currentQuestion.tolerance}</p>
                                 )}
                             </div>
                         )}
@@ -614,13 +614,13 @@ export default function QuizPage() {
                                     disabled={currentState?.answered} rows={6} style={{ resize: 'vertical', marginBottom: 10 }} />
                                 <button onClick={() => { if (descInput.trim() && !currentState?.answered) submitAnswer(descInput); }}
                                     disabled={!descInput.trim() || currentState?.answered} className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px' }}>
-                                    📤 Submit Answer for AI Grading
+                                    ðŸ“¤ Submit Answer for AI Grading
                                 </button>
                             </div>
                         )}
                         {currentQuestion.type === 'fillintheblank' && (
                             <div>
-                                <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+                                <div className="page-container" style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
                                     <input type="text" className="input-field" placeholder="Enter the missing word(s)..." value={fitbInput} onChange={e => setFitbInput(e.target.value)}
                                         disabled={currentState?.answered} onKeyDown={e => { if (e.key === 'Enter' && fitbInput.trim() && !currentState?.answered) submitAnswer(fitbInput.trim()); }}
                                         style={{ flex: 1, fontSize: 18, fontWeight: 700, textAlign: 'center' }} />
@@ -634,7 +634,7 @@ export default function QuizPage() {
                         {currentQuestion.type === 'matching' && (
                             <div>
                                 <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12 }}>Match the items on the left to the correct items on the right by selecting from the dropdowns.</p>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, marginBottom: 16 }}>
+                                <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, marginBottom: 16 }}>
                                     {currentQuestion.pairs?.map((p: any, i: number) => {
                                         const allRightItems = currentQuestion.pairs?.map((pair: any) => pair.right) || [];
                                         const shuffledRight = [...allRightItems].sort((a, b) => a.localeCompare(b));
@@ -646,10 +646,10 @@ export default function QuizPage() {
                                         if (isWrongMatch) borderColor = '#f43f5e';
                                         return (
                                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: `1px solid ${borderColor}` }}>
-                                                <div style={{ flex: 1, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: 8 }}>
+                                                <div className="page-container" style={{ flex: 1, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: 8 }}>
                                                     {p.left}
                                                 </div>
-                                                <div style={{ flexShrink: 0, color: 'var(--text-muted)' }}>→</div>
+                                                <div className="page-container" style={{ flexShrink: 0, color: 'var(--text-muted)' }}>â†’</div>
                                                 <select
                                                     value={matchPairs[p.left] || ''}
                                                     onChange={e => setMatchPairs(prev => ({ ...prev, [p.left]: e.target.value }))}
@@ -663,8 +663,8 @@ export default function QuizPage() {
                                                     ))}
                                                 </select>
                                                 {answered && (
-                                                    <div style={{ width: 24, textAlign: 'center', fontSize: 16 }}>
-                                                        {isCorrectMatch ? '✅' : '❌'}
+                                                    <div className="page-container" style={{ width: 24, textAlign: 'center', fontSize: 16 }}>
+                                                        {isCorrectMatch ? 'âœ…' : 'âŒ'}
                                                     </div>
                                                 )}
                                             </div>
@@ -686,7 +686,7 @@ export default function QuizPage() {
                             {currentState?.grading && (
                                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass-card"
                                     style={{ padding: 20, marginTop: 16, borderColor: 'rgba(124,58,237,0.3)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                                    <div style={{ display: 'flex', gap: 4 }}>
+                                    <div className="page-container" style={{ display: 'flex', gap: 4 }}>
                                         {[0, 1, 2].map((i: number) => <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--brand-violet)', animation: `float ${0.6 + i * 0.2}s ease-in-out infinite`, animationDelay: `${i * 0.1}s` }} />)}
                                     </div>
                                     <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>AI is grading your answer...</span>
@@ -695,9 +695,9 @@ export default function QuizPage() {
                             {currentState?.gradeResult && !currentState.grading && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card"
                                     style={{ padding: 20, marginTop: 16, borderLeft: `4px solid ${currentState.gradeResult.isCorrect ? '#10b981' : currentState.gradeResult.score > 0 ? '#f59e0b' : '#f43f5e'}` }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                                    <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                                         <span style={{ fontSize: 14, fontWeight: 700, color: currentState.gradeResult.isCorrect ? '#10b981' : currentState.gradeResult.score > 0 ? '#f59e0b' : '#f43f5e' }}>
-                                            {currentState.gradeResult.isCorrect ? '✅ Correct!' : currentState.gradeResult.score > 0 ? '🟡 Partial Credit' : '❌ Incorrect'}
+                                            {currentState.gradeResult.isCorrect ? 'âœ… Correct!' : currentState.gradeResult.score > 0 ? 'ðŸŸ¡ Partial Credit' : 'âŒ Incorrect'}
                                         </span>
                                         <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--brand-violet-light)' }}>
                                             +{currentState.gradeResult.score} / {currentState.gradeResult.maxScore} pts
@@ -707,24 +707,24 @@ export default function QuizPage() {
                                         {currentState.gradeResult.feedback}
                                     </p>
                                     {currentState.gradeResult.keyPointsMissed && currentState.gradeResult.keyPointsMissed.length > 0 && (
-                                        <div style={{ marginTop: 8 }}>
-                                            <div style={{ fontSize: 12, fontWeight: 600, color: '#f43f5e', marginBottom: 4 }}>Key points missed:</div>
+                                        <div className="page-container" style={{ marginTop: 8 }}>
+                                            <div className="page-container" style={{ fontSize: 12, fontWeight: 600, color: '#f43f5e', marginBottom: 4 }}>Key points missed:</div>
                                             {currentState.gradeResult.keyPointsMissed.map((p: string, i: number) => (
-                                                <div key={i} style={{ fontSize: 12, color: 'var(--text-muted)', paddingLeft: 8 }}>• {p}</div>
+                                                <div key={i} style={{ fontSize: 12, color: 'var(--text-muted)', paddingLeft: 8 }}>â€¢ {p}</div>
                                             ))}
                                         </div>
                                     )}
                                     {currentState.gradeResult.strongPoints && currentState.gradeResult.strongPoints.length > 0 && (
-                                        <div style={{ marginTop: 8 }}>
-                                            <div style={{ fontSize: 12, fontWeight: 600, color: '#10b981', marginBottom: 4 }}>Strong points:</div>
+                                        <div className="page-container" style={{ marginTop: 8 }}>
+                                            <div className="page-container" style={{ fontSize: 12, fontWeight: 600, color: '#10b981', marginBottom: 4 }}>Strong points:</div>
                                             {currentState.gradeResult.strongPoints.map((p: string, i: number) => (
-                                                <div key={i} style={{ fontSize: 12, color: 'var(--text-muted)', paddingLeft: 8 }}>• {p}</div>
+                                                <div key={i} style={{ fontSize: 12, color: 'var(--text-muted)', paddingLeft: 8 }}>â€¢ {p}</div>
                                             ))}
                                         </div>
                                     )}
                                     { }
                                     <button onClick={advanceQuestion} className="btn-primary" style={{ marginTop: 14, width: '100%', justifyContent: 'center', padding: '11px' }}>
-                                        {currentQ < questions.length - 1 ? 'Next Question →' : '🏁 Finish Quiz'}
+                                        {currentQ < questions.length - 1 ? 'Next Question â†’' : 'ðŸ Finish Quiz'}
                                     </button>
                                 </motion.div>
                             )}
@@ -735,28 +735,28 @@ export default function QuizPage() {
                 {phase === 'results' && (
                     <motion.div key="results" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
                         { }
-                        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                            <div style={{ fontSize: 80, fontWeight: 900, color: finalPct >= 80 ? '#10b981' : finalPct >= 60 ? '#f59e0b' : '#f43f5e', marginBottom: 4 }}>{finalPct}%</div>
-                            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{totalEarned} / {totalPossible} points</div>
-                            <div style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24 }}>
-                                {finalPct >= 80 ? '🏆 Outstanding performance!' : finalPct >= 60 ? '📚 Good work, keep studying!' : '💪 Great effort, review the explanations!'}
+                        <div className="page-container" style={{ textAlign: 'center', marginBottom: 32 }}>
+                            <div className="page-container" style={{ fontSize: 80, fontWeight: 900, color: finalPct >= 80 ? '#10b981' : finalPct >= 60 ? '#f59e0b' : '#f43f5e', marginBottom: 4 }}>{finalPct}%</div>
+                            <div className="page-container" style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{totalEarned} / {totalPossible} points</div>
+                            <div className="page-container" style={{ fontSize: 14, color: 'var(--text-muted)', marginBottom: 24 }}>
+                                {finalPct >= 80 ? 'ðŸ† Outstanding performance!' : finalPct >= 60 ? 'ðŸ“š Good work, keep studying!' : 'ðŸ’ª Great effort, review the explanations!'}
                             </div>
-                            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                                <button onClick={() => { setPhase('quiz'); setCurrentQ(0); setQuestionStates(questions.map(() => ({ answered: false, userAnswer: null, gradeResult: null, grading: false, skipped: false, timeSpent: 0 }))); resetInputs(); }} className="btn-secondary">↺ Retry Quiz</button>
+                            <div className="page-container" style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                                <button onClick={() => { setPhase('quiz'); setCurrentQ(0); setQuestionStates(questions.map(() => ({ answered: false, userAnswer: null, gradeResult: null, grading: false, skipped: false, timeSpent: 0 }))); resetInputs(); }} className="btn-secondary">â†º Retry Quiz</button>
                                 <button onClick={() => { setPhase('setup'); setQuestions([]); setContent(''); setTopic(''); }} className="btn-primary">+ New Quiz</button>
                             </div>
                         </div>
                         { }
                         {typeStats.length > 1 && (
                             <div className="glass-card" style={{ padding: 24, marginBottom: 24 }}>
-                                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>📊 Score by Question Type</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+                                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>ðŸ“Š Score by Question Type</h3>
+                                <div className="page-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
                                     {typeStats.map((s: { type: QuestionType; count: number; earned: number; possible: number; pct: number }) => (
                                         <div key={s.type} style={{ padding: 14, borderRadius: 12, background: QUESTION_TYPE_META[s.type].color + '12', border: `1px solid ${QUESTION_TYPE_META[s.type].color}30`, textAlign: 'center' }}>
-                                            <div style={{ fontSize: 20, marginBottom: 4 }}>{QUESTION_TYPE_META[s.type].icon}</div>
-                                            <div style={{ fontSize: 13, fontWeight: 700, color: QUESTION_TYPE_META[s.type].color }}>{s.pct}%</div>
-                                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{QUESTION_TYPE_META[s.type].label}</div>
-                                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.earned}/{s.possible} pts</div>
+                                            <div className="page-container" style={{ fontSize: 20, marginBottom: 4 }}>{QUESTION_TYPE_META[s.type].icon}</div>
+                                            <div className="page-container" style={{ fontSize: 13, fontWeight: 700, color: QUESTION_TYPE_META[s.type].color }}>{s.pct}%</div>
+                                            <div className="page-container" style={{ fontSize: 11, color: 'var(--text-muted)' }}>{QUESTION_TYPE_META[s.type].label}</div>
+                                            <div className="page-container" style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.earned}/{s.possible} pts</div>
                                         </div>
                                     ))}
                                 </div>
@@ -764,16 +764,16 @@ export default function QuizPage() {
                         )}
                         { }
                         <div>
-                            <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>📋 Full Review</h3>
+                            <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>ðŸ“‹ Full Review</h3>
                             {questions.map((q: AdvancedQuestion, i: number) => {
                                 const st = questionStates[i];
                                 const gr = st?.gradeResult;
                                 const isCorrect = gr?.isCorrect;
                                 return (
                                     <div key={i} className="glass-card" style={{ padding: 20, marginBottom: 12, borderLeft: `3px solid ${isCorrect ? '#10b981' : gr && gr.score > 0 ? '#f59e0b' : '#f43f5e'}` }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                                <span style={{ fontSize: 18, flexShrink: 0 }}>{isCorrect ? '✅' : gr && gr.score > 0 ? '🟡' : '❌'}</span>
+                                        <div className="page-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                                            <div className="page-container" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                                <span style={{ fontSize: 18, flexShrink: 0 }}>{isCorrect ? 'âœ…' : gr && gr.score > 0 ? 'ðŸŸ¡' : 'âŒ'}</span>
                                                 <div>
                                                     <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, background: QUESTION_TYPE_META[q.type].color + '20', color: QUESTION_TYPE_META[q.type].color, fontWeight: 700, marginRight: 6 }}>{QUESTION_TYPE_META[q.type].icon}</span>
                                                     <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Q{i + 1}. {q.question}</span>
@@ -782,31 +782,31 @@ export default function QuizPage() {
                                             <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--brand-violet-light)', flexShrink: 0, marginLeft: 12 }}>{gr?.score ?? 0}/{q.points} pts</span>
                                         </div>
                                         {q.type === 'descriptive' && q.idealAnswer && (
-                                            <div style={{ fontSize: 13, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '12px 16px', borderRadius: 8, marginTop: 12, marginBottom: 12, marginLeft: 32, borderLeft: '3px solid #10b981' }}>
-                                                <div style={{ fontWeight: 700, marginBottom: 4 }}>💡 Model Answer</div>
-                                                <div style={{ lineHeight: 1.5 }}>{q.idealAnswer}</div>
+                                            <div className="page-container" style={{ fontSize: 13, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '12px 16px', borderRadius: 8, marginTop: 12, marginBottom: 12, marginLeft: 32, borderLeft: '3px solid #10b981' }}>
+                                                <div className="page-container" style={{ fontWeight: 700, marginBottom: 4 }}>ðŸ’¡ Model Answer</div>
+                                                <div className="page-container" style={{ lineHeight: 1.5 }}>{q.idealAnswer}</div>
                                             </div>
                                         )}
                                         {q.type === 'fillintheblank' && q.blankAnswer && (
-                                            <div style={{ fontSize: 13, color: '#ec4899', background: 'rgba(236,72,153,0.08)', padding: '8px 12px', borderRadius: 8, marginTop: 8, marginBottom: 8, marginLeft: 32, borderLeft: '3px solid #ec4899', display: 'inline-block' }}>
+                                            <div className="page-container" style={{ fontSize: 13, color: '#ec4899', background: 'rgba(236,72,153,0.08)', padding: '8px 12px', borderRadius: 8, marginTop: 8, marginBottom: 8, marginLeft: 32, borderLeft: '3px solid #ec4899', display: 'inline-block' }}>
                                                 <span style={{ fontWeight: 700 }}>Correct word:</span> {q.blankAnswer}
                                             </div>
                                         )}
                                         {q.type === 'matching' && q.pairs && (
-                                            <div style={{ fontSize: 13, color: '#8b5cf6', background: 'rgba(139,92,246,0.08)', padding: '12px 16px', borderRadius: 8, marginTop: 12, marginBottom: 12, marginLeft: 32, borderLeft: '3px solid #8b5cf6' }}>
-                                                <div style={{ fontWeight: 700, marginBottom: 8 }}>🔗 Correct Matches</div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                            <div className="page-container" style={{ fontSize: 13, color: '#8b5cf6', background: 'rgba(139,92,246,0.08)', padding: '12px 16px', borderRadius: 8, marginTop: 12, marginBottom: 12, marginLeft: 32, borderLeft: '3px solid #8b5cf6' }}>
+                                                <div className="page-container" style={{ fontWeight: 700, marginBottom: 8 }}>ðŸ”— Correct Matches</div>
+                                                <div className="page-container" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                                     {q.pairs.map((p: any, j: number) => (
                                                         <div key={j} style={{ display: 'flex', gap: 8 }}>
                                                             <span style={{ fontWeight: 600 }}>{p.left}</span>
-                                                            <span style={{ color: 'var(--text-muted)' }}>→</span>
+                                                            <span style={{ color: 'var(--text-muted)' }}>â†’</span>
                                                             <span>{p.right}</span>
                                                         </div>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
-                                        {gr?.feedback && <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, marginLeft: 32 }}>{gr.feedback}</div>}
+                                        {gr?.feedback && <div className="page-container" style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, marginLeft: 32 }}>{gr.feedback}</div>}
                                         <button onClick={() => exportToFlashcard(q)} className="btn-secondary" style={{ marginTop: 12, marginLeft: 32, padding: '6px 12px', fontSize: 12 }}>
                                             + Turn into Flashcard
                                         </button>
@@ -820,3 +820,4 @@ export default function QuizPage() {
         </div>
     );
 }
+

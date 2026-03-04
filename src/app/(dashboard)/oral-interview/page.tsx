@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { motion, AnimatePresence } from 'motion/react';
@@ -176,50 +176,50 @@ export default function OralInterviewPage() {
     if (phase === 'report') {
         const r = finalReport;
         return (
-            <div style={{ maxWidth: 900, margin: '40px auto', padding: 20 }}>
-                <div style={{ background: 'var(--bg-card)', borderRadius: 24, border: '1px solid var(--border-subtle)', padding: 40 }}>
+            <div className="page-container" style={{ maxWidth: 900, margin: '40px auto', padding: 20 }}>
+                <div className="page-container" style={{ background: 'var(--bg-card)', borderRadius: 24, border: '1px solid var(--border-subtle)', padding: 40 }}>
                     {!r ? (
-                        <div style={{ textAlign: 'center', padding: 60 }}>
-                            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }} style={{ fontSize: 40, marginBottom: 20 }}>⌛</motion.div>
+                        <div className="page-container" style={{ textAlign: 'center', padding: 60 }}>
+                            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }} style={{ fontSize: 40, marginBottom: 20 }}>âŒ›</motion.div>
                             <h2>Analyzing your performance...</h2>
                             <p style={{ color: 'var(--text-muted)' }}>The AI Panel is reviewing your transcript, code, and drawings.</p>
                         </div>
                     ) : (
                         <div>
                             <header style={{ textAlign: 'center', marginBottom: 40 }}>
-                                <div style={{ fontSize: 48, marginBottom: 16 }}>{r.score >= 80 ? '🏆' : r.score >= 60 ? '🎓' : '📚'}</div>
+                                <div className="page-container" style={{ fontSize: 48, marginBottom: 16 }}>{r.score >= 80 ? 'ðŸ†' : r.score >= 60 ? 'ðŸŽ“' : 'ðŸ“š'}</div>
                                 <h1 style={{ fontSize: 32, fontWeight: 900, color: 'var(--text-primary)' }}>Achievement: {r.achievementLevel}</h1>
-                                <div style={{ display: 'inline-block', marginTop: 12, padding: '8px 24px', borderRadius: 40, background: 'rgba(139,92,246,0.1)', border: '1px solid var(--brand-violet)', color: 'var(--brand-violet-light)', fontWeight: 800 }}>
+                                <div className="page-container" style={{ display: 'inline-block', marginTop: 12, padding: '8px 24px', borderRadius: 40, background: 'rgba(139,92,246,0.1)', border: '1px solid var(--brand-violet)', color: 'var(--brand-violet-light)', fontWeight: 800 }}>
                                     Success Percentage: {r.score}%
                                 </div>
                             </header>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20, marginBottom: 40 }}>
+                            <div className="page-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20, marginBottom: 40 }}>
                                 {Object.entries(r.dimensions || {}).map(([key, val]) => (
                                     <div key={key} className="card" style={{ padding: 20, textAlign: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>{key}</div>
-                                        <div style={{ fontSize: 24, fontWeight: 800 }}>{val as number}%</div>
+                                        <div className="page-container" style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 8 }}>{key}</div>
+                                        <div className="page-container" style={{ fontSize: 24, fontWeight: 800 }}>{val as number}%</div>
                                     </div>
                                 ))}
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 40 }}>
+                            <div className="page-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 40 }}>
                                 <div>
-                                    <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: '#10b981' }}>➕ Strengths</h3>
+                                    <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: '#10b981' }}>âž• Strengths</h3>
                                     <ul style={{ paddingLeft: 20, color: 'var(--text-secondary)', fontSize: 14 }}>
                                         {r.strengths?.map((s: string, i: number) => <li key={i} style={{ marginBottom: 10 }}>{s}</li>)}
                                     </ul>
                                 </div>
                                 <div>
-                                    <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: '#f43f5e' }}>➖ Growth Areas</h3>
+                                    <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: '#f43f5e' }}>âž– Growth Areas</h3>
                                     <ul style={{ paddingLeft: 20, color: 'var(--text-secondary)', fontSize: 14 }}>
                                         {r.growthAreas?.map((s: string, i: number) => <li key={i} style={{ marginBottom: 10 }}>{s}</li>)}
                                     </ul>
                                 </div>
                             </div>
-                            <div style={{ background: 'rgba(255,255,255,0.03)', padding: 32, borderRadius: 16, border: '1px solid var(--border-subtle)', marginBottom: 40 }}>
+                            <div className="page-container" style={{ background: 'rgba(255,255,255,0.03)', padding: 32, borderRadius: 16, border: '1px solid var(--border-subtle)', marginBottom: 40 }}>
                                 <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 12 }}>Executive Summary</h3>
                                 <p style={{ lineHeight: 1.6, color: 'var(--text-secondary)' }}>{r.summary}</p>
                             </div>
-                            <div style={{ textAlign: 'center' }}>
+                            <div className="page-container" style={{ textAlign: 'center' }}>
                                 <button onClick={() => setPhase('setup')} className="btn-primary" style={{ padding: '12px 40px', borderRadius: 12 }}>
                                     Back to Dashboard
                                 </button>
@@ -232,7 +232,7 @@ export default function OralInterviewPage() {
     }
     if (phase === 'setup') {
         return (
-            <div style={{ maxWidth: 800, margin: '40px auto', padding: 32 }}>
+            <div className="page-container" style={{ maxWidth: 800, margin: '40px auto', padding: 32 }}>
                 <header style={{ marginBottom: 40, textAlign: 'center' }}>
                     <h1 style={{
                         fontSize: 32,
@@ -245,7 +245,7 @@ export default function OralInterviewPage() {
                         display: 'inline-block',
                         marginBottom: 12
                     }}>
-                        🎙️ Oral Interview Practice
+                        ðŸŽ™ï¸ Oral Interview Practice
                     </h1>
                     <p style={{ color: 'var(--text-muted)', fontSize: 16 }}>
                         Practice your interview skills with realistic scenarios and feedback.
@@ -264,7 +264,7 @@ export default function OralInterviewPage() {
                     </section>
                     <section>
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>2. Context Source (Resume/Notes/Docs)</h3>
-                        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                        <div className="page-container" style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                             {(['text', 'pdf', 'docx', 'image'] as const).map(tab => (
                                 <button
                                     key={tab}
@@ -290,7 +290,7 @@ export default function OralInterviewPage() {
                                 style={{ height: 120, fontSize: 14, padding: '12px 16px', resize: 'none' }}
                             />
                         ) : (
-                            <div style={{
+                            <div className="page-container" style={{
                                 height: 120, border: '2px dashed var(--border-subtle)', borderRadius: 12,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                                 background: 'rgba(255,255,255,0.02)', position: 'relative'
@@ -298,7 +298,7 @@ export default function OralInterviewPage() {
                                 <input
                                     type="file"
                                     accept={inputTab === 'image' ? 'image/*' : inputTab === 'pdf' ? '.pdf' : '.docx'} onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileUpload(file, inputTab); }} style={{ display: 'none' }} />
-                                <div style={{ marginTop: 12, fontSize: 14, color: 'var(--text-muted)' }}>Click or drop file here</div>
+                                <div className="page-container" style={{ marginTop: 12, fontSize: 14, color: 'var(--text-muted)' }}>Click or drop file here</div>
                             </div>
                         )}
                     </section>
@@ -307,7 +307,7 @@ export default function OralInterviewPage() {
                         <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             3. Interview Settings
                         </h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16 }}>
+                        <div className="page-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16 }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>Difficulty</label>
                                 <select
@@ -350,7 +350,7 @@ export default function OralInterviewPage() {
                     </section>
 
                     <button onClick={startInterview} disabled={loading} className="btn-primary" style={{ padding: '16px', justifyContent: 'center', fontSize: 16, marginTop: 8 }}>
-                        {loading ? '⏳ Preparing...' : '🚀 Start Interview'}
+                        {loading ? 'â³ Preparing...' : 'ðŸš€ Start Interview'}
                     </button>
                 </div>
             </div>
@@ -359,9 +359,9 @@ export default function OralInterviewPage() {
 
     return (
         <main style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', width: '100%', height: '100%' }}>
-                <div style={{ width: 400, borderRight: '1px solid #333', display: 'flex', flexDirection: 'column', background: '#050505' }}>
-                    <div style={{ flex: 1, position: 'relative' }}>
+            <div className="page-container" style={{ display: 'flex', width: '100%', height: '100%' }}>
+                <div className="page-container" style={{ width: 400, borderRight: '1px solid #333', display: 'flex', flexDirection: 'column', background: '#050505' }}>
+                    <div className="page-container" style={{ flex: 1, position: 'relative' }}>
                         <AIInterviewer
                             topic={topic}
                             content={content}
@@ -377,13 +377,13 @@ export default function OralInterviewPage() {
                             onScribeUpdate={setScribeNotes}
                         />
                     </div>
-                    <div style={{ padding: 12, borderTop: '1px solid #333', background: '#0a0a0a', textAlign: 'center' }}>
-                        <div style={{ fontSize: 12, fontWeight: 800, color: timeLeft < 60 ? '#f43f5e' : '#555' }}>
+                    <div className="page-container" style={{ padding: 12, borderTop: '1px solid #333', background: '#0a0a0a', textAlign: 'center' }}>
+                        <div className="page-container" style={{ fontSize: 12, fontWeight: 800, color: timeLeft < 60 ? '#f43f5e' : '#555' }}>
                             TIME REMAINING: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
                         </div>
                     </div>
-                    <div style={{ height: 300, borderTop: '1px solid #333', padding: 20, background: '#0a0a0a', overflowY: 'auto' }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: '#555', marginBottom: 12, textTransform: 'uppercase' }}>Transcript</div>
+                    <div className="page-container" style={{ height: 300, borderTop: '1px solid #333', padding: 20, background: '#0a0a0a', overflowY: 'auto' }}>
+                        <div className="page-container" style={{ fontSize: 11, fontWeight: 700, color: '#555', marginBottom: 12, textTransform: 'uppercase' }}>Transcript</div>
                         {messages.map((m, i) => (
                             <div key={i} style={{ marginBottom: 12, fontSize: 13, color: m.role === 'user' ? '#06b6d4' : '#fff' }}>
                                 <span style={{ fontWeight: 800 }}>{m.role === 'user' ? 'YOU: ' : 'INTERVIEWER: '}</span>
@@ -391,9 +391,9 @@ export default function OralInterviewPage() {
                             </div>
                         ))}
                     </div>
-                    <div style={{ padding: 20, borderTop: '1px solid #333', display: 'flex', gap: 12 }}>
+                    <div className="page-container" style={{ padding: 20, borderTop: '1px solid #333', display: 'flex', gap: 12 }}>
                         <button onClick={() => setIsMuted(!isMuted)} className="btn-secondary" style={{ flex: 1, padding: '12px' }}>
-                            {isMuted ? '🔇 Unmute' : '🎙️ Mic Active'}
+                            {isMuted ? 'ðŸ”‡ Unmute' : 'ðŸŽ™ï¸ Mic Active'}
                         </button>
                         <button onClick={() => { if (confirm('End interview and get report?')) endInterview(); }} className="btn-primary" style={{ flex: 1, background: '#f43f5e' }}>
                             Stop Interview
@@ -401,7 +401,7 @@ export default function OralInterviewPage() {
                     </div>
                 </div>
                 { }
-                <div style={{ flex: 1, background: '#111', display: 'flex', flexDirection: 'column' }}>
+                <div className="page-container" style={{ flex: 1, background: '#111', display: 'flex', flexDirection: 'column' }}>
                     <InterviewWorkshop
                         code={code}
                         onChangeCode={setCode}
@@ -414,3 +414,4 @@ export default function OralInterviewPage() {
         </main>
     );
 }
+

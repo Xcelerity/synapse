@@ -78,7 +78,7 @@ export default function DashboardPage() {
           ).length;
         });
         setDueFlashcards(due);
-      } catch {}
+      } catch { }
       setLoading(false);
     }
     fetchData();
@@ -158,8 +158,8 @@ export default function DashboardPage() {
     },
   ];
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1400 }}>
-      {}
+    <div className="page-container" style={{ padding: "32px 40px", maxWidth: 1400 }}>
+      { }
       <div
         className="bg-orb bg-orb-violet"
         style={{
@@ -172,7 +172,7 @@ export default function DashboardPage() {
           opacity: 0.06,
         }}
       />
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -184,6 +184,7 @@ export default function DashboardPage() {
             alignItems: "center",
             justifyContent: "space-between",
           }}
+          className="dashboard-header"
         >
           <div>
             <h1
@@ -269,8 +270,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </motion.div>
-      {}
+      { }
       <div
+        className="dashboard-stats-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -339,6 +341,7 @@ export default function DashboardPage() {
         />
       </motion.div>
       <div
+        className="dashboard-two-col"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -346,7 +349,7 @@ export default function DashboardPage() {
           marginBottom: 32,
         }}
       >
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -407,7 +410,7 @@ export default function DashboardPage() {
             ))}
           </div>
         </motion.div>
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -515,11 +518,12 @@ export default function DashboardPage() {
           )}
         </motion.div>
       </div>
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
+        className="dashboard-cta"
         style={{
           background: "var(--gradient-brand)",
           borderRadius: 20,

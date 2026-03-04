@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import toast from "react-hot-toast";
@@ -109,22 +109,22 @@ Return ONLY valid JSON with this exact schema:
     }
   }
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1200, margin: "0 auto" }}>
+    <div className="page-container" style={{ padding: "32px 40px", maxWidth: 1200, margin: "0 auto" }}>
       {phase === "setup" ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div style={{ marginBottom: 32 }}>
+          <div className="page-container" style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8, color: "var(--text-primary)" }}>
-              🎨 Cheatsheets
+              ðŸŽ¨ Cheatsheets
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: 16 }}>
               Turn any topic, text, or file into a beautiful, multi-page vector cheatsheet.
             </p>
           </div>
           <div className="glass-card" style={{ padding: 32 }}>
-            <div style={{ marginBottom: 24 }}>
+            <div className="page-container" style={{ marginBottom: 24 }}>
               <label
                 style={{
                   display: "block",
@@ -146,7 +146,7 @@ Return ONLY valid JSON with this exact schema:
                 onChange={(e) => setTopic(e.target.value)}
               />
             </div>
-            <div style={{ marginBottom: 24 }}>
+            <div className="page-container" style={{ marginBottom: 24 }}>
               <label
                 style={{
                   display: "block",
@@ -160,7 +160,7 @@ Return ONLY valid JSON with this exact schema:
               >
                 Source Material (Optional)
               </label>
-              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <div className="page-container" style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                 {(["text", "image", "pdf", "youtube"] as const).map((tab) => (
                   <button
                     key={tab}
@@ -180,16 +180,15 @@ Return ONLY valid JSON with this exact schema:
                       color: inputTab === tab ? "white" : "var(--text-muted)",
                     }}
                   >
-                    {tab === "text" && "📝 Type / Paste"}
-                    {tab === "image" && "🖼️ Image"}
-                    {tab === "pdf" && "📄 PDF"}
-                    {tab === "youtube" && "🎥 YouTube"}
+                    {tab === "text" && "ðŸ“ Type / Paste"}
+                    {tab === "image" && "ðŸ–¼ï¸ Image"}
+                    {tab === "pdf" && "ðŸ“„ PDF"}
+                    {tab === "youtube" && "ðŸŽ¥ YouTube"}
                   </button>
                 ))}
               </div>
               {inputTab === "text" && (
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 8 }}
+                <div className="page-container" style={{ display: "flex", flexDirection: "column", gap: 8 }}
                 >
                   <textarea
                     className="input-field"
@@ -206,24 +205,22 @@ Return ONLY valid JSON with this exact schema:
                 </div>
               )}
               {inputTab !== "text" && (
-                <div
-                  style={{
+                <div className="page-container" style={{
                     border: "2px dashed var(--border-subtle)",
                     borderRadius: 12,
                     padding: 40,
                     textAlign: "center",
                   }}
                 >
-                  <div style={{ fontSize: 32, marginBottom: 12 }}>📁</div>
-                  <div style={{ fontSize: 14, color: "var(--text-muted)" }}>
+                  <div className="page-container" style={{ fontSize: 32, marginBottom: 12 }}>ðŸ“</div>
+                  <div className="page-container" style={{ fontSize: 14, color: "var(--text-muted)" }}>
                     This tab is under construction. Please use Text input for
                     now!
                   </div>
                 </div>
               )}
             </div>
-            <div
-              style={{
+            <div className="page-container" style={{
                 display: "flex",
                 justifyContent: "flex-end",
                 marginTop: 32,
@@ -236,16 +233,15 @@ Return ONLY valid JSON with this exact schema:
                 style={{ padding: "14px 32px", fontSize: 16 }}
               >
                 {generating
-                  ? "✨ Synthesizing Cheatsheet..."
-                  : "🎨 Auto-Synthesize Cheatsheet"}
+                  ? "âœ¨ Synthesizing Cheatsheet..."
+                  : "ðŸŽ¨ Auto-Synthesize Cheatsheet"}
               </button>
             </div>
           </div>
         </motion.div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div
-            style={{
+          <div className="page-container" style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -253,19 +249,18 @@ Return ONLY valid JSON with this exact schema:
             }}
           >
             <button onClick={() => setPhase("setup")} className="btn-ghost">
-              ← Back to Editor
+              â† Back to Editor
             </button>
             <button
               onClick={handleDownloadPDF}
               className="btn-primary"
               style={{ display: "flex", gap: 8, alignItems: "center" }}
             >
-              <span>📥</span> Download PDF
+              <span>ðŸ“¥</span> Download PDF
             </button>
           </div>
           { }
-          <div
-            style={{
+          <div className="page-container" style={{
               background: "#e2e8f0",
               padding: 40,
               borderRadius: 16,
@@ -290,3 +285,4 @@ Return ONLY valid JSON with this exact schema:
     </div>
   );
 }
+

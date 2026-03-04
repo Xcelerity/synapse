@@ -371,3 +371,225 @@ body {
     background: var(--border-subtle);
     border-radius: 99px;
 }
+
+/* ============================================
+   INPUT FIELDS & CHAT BUBBLES
+   ============================================ */
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: "Outfit", "Inter", sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    border-color: var(--brand-violet);
+}
+
+.input-field::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-primary {
+    background: var(--gradient-brand);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: "Outfit", "Inter", sans-serif;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: "Outfit", "Inter", sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.chat-bubble-user {
+    background: var(--gradient-brand);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 18px 18px 4px 18px;
+    max-width: 75%;
+    word-break: break-word;
+}
+
+.chat-bubble-ai {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    max-width: 75%;
+    word-break: break-word;
+}
+
+.glass-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.glass-card-hover {
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card-hover:hover {
+    border-color: rgba(139, 92, 246, 0.3) !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.shimmer {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-secondary) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ============================================
+   RESPONSIVE: TABLET (768px – 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+
+    /* Sidebar auto-collapses to icon mode */
+    .sidebar-full-width {
+        width: 72px !important;
+    }
+}
+
+/* ============================================
+   RESPONSIVE: MOBILE (< 768px)
+   ============================================ */
+@media (max-width: 768px) {
+
+    /* Give pages padding at bottom for the bottom nav bar */
+    .dashboard-main {
+        padding-bottom: 72px !important;
+    }
+
+    /* Pages that use a 2-panel flex layout (notes, ai-tutor, etc.) */
+    .page-split {
+        flex-direction: column !important;
+        height: auto !important;
+    }
+
+    .page-split-sidebar {
+        width: 100% !important;
+        max-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-subtle) !important;
+        flex-shrink: 0;
+    }
+
+    .page-split-main {
+        height: calc(100vh - 280px - 72px) !important;
+    }
+
+    /* Chat-style pages */
+    .chat-bubble-user,
+    .chat-bubble-ai {
+        max-width: 90%;
+    }
+
+    /* Dashboard page */
+    .dashboard-header {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+    }
+
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .dashboard-two-col {
+        grid-template-columns: 1fr !important;
+    }
+
+    .dashboard-cta {
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .dashboard-cta button,
+    .dashboard-cta a {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Generic page padding */
+    .page-container {
+        padding: 16px !important;
+    }
+
+    /* Login page */
+    .login-split {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+
+    .login-features {
+        display: none !important;
+    }
+
+    .login-auth-panel {
+        flex: 1 !important;
+        width: 100% !important;
+        border-left: none !important;
+        border-top: none !important;
+        padding: 32px 20px !important;
+        min-height: 100vh !important;
+    }
+}
