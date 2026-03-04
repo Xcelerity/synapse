@@ -25,7 +25,7 @@ export const useThemeStore = create<ThemeState>()(
         }),
     }),
     {
-      name: "studyos-theme",
+      name: "synapse-theme",
       onRehydrateStorage: () => (state) => {
         if (state) {
           document.documentElement.setAttribute("data-theme", state.theme);

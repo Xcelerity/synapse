@@ -198,6 +198,6 @@ export const useAuthStore = create<AuthStore>()(
         }),
       reset: () => set({ user: null, gamification: defaultGamification }),
     }),
-    { name: "studyos-auth", skipHydration: true },
+    { name: "synapse-auth", skipHydration: true },
   ),
 );
